@@ -1,0 +1,30 @@
+{
+  "name": "vidtube-nextjs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@next/font": "13.1.1",
+    "@reduxjs/toolkit": "^1.9.1",
+    "autoprefixer": "^10.4.13",
+    "axios": "^1.2.2",
+    "daisyui": "^2.46.1",
+    "framer-motion": "^8.5.0",
+    "next": "13.1.1",
+    "postcss": "^8.4.21",
+    "react": "18.2.0",
+    "react-bootstrap-icons": "^1.10.2",
+    "react-cookie": "^4.1.1",
+    "react-dom": "18.2.0",
+    "react-redux": "^8.0.5",
+    "tailwindcss": "^3.2.4"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^7.6.0"
+  }
+}
