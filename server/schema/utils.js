@@ -7,6 +7,19 @@ const {
   GraphQLScalarType,
 } = require("graphql");
 
+// ---------- FOR MODELS
+const Collections = {
+  user: "Users",
+  post: "Posts",
+};
+
+const Roles = {
+  admin: "Admin",
+  user: "User",
+};
+
+const RolesEnums = [Roles.admin, Roles.user];
+
 const AddressType = new GraphQLObjectType({
   name: "Address",
   fields: () => ({
@@ -51,6 +64,9 @@ const SortInputType = new GraphQLEnumType({
 });
 
 module.exports = {
+  Collections,
+  Roles,
+  RolesEnums,
   DateType,
   AddressType,
   PageInputType,
