@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { hashPassword } = require("../utils/encrypt");
+const { hashPassword } = require("../server/utils/encrypt");
 const { Collections, Roles, RolesEnums } = require("./utils");
 
 // ----------------- USER MODEL
@@ -9,10 +9,7 @@ const UserSchema = new mongoose.Schema(
     password: { type: String, default: "1234" },
     role: { type: String, enum: RolesEnums, default: Roles.user },
     name: String,
-    address: {
-      country: String,
-      city: String,
-    },
+    country: String,
     links: {
       facebook: String,
       instagram: String,
@@ -43,7 +40,7 @@ const UserModel = mongoose.model(Collections.user, UserSchema);
 const PostSchema = new mongoose.Schema({
   title: String,
   category: String,
-  keyword: [String],
+  keywords: [String],
   description: String,
   body: String,
   comments: [
