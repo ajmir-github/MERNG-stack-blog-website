@@ -21,8 +21,36 @@ const PublishedInputType = new GraphQLEnumType({
   },
 });
 
+const SortInputType = new GraphQLInputObjectType({
+  name: "SortInputType",
+  fields: {
+    order: {
+      type: new GraphQLEnumType({
+        name: "SortOrderEnums",
+        values: {
+          asc: { value: 1 },
+          desc: { value: -1 },
+        },
+      }),
+      defaultValue: -1,
+    },
+    by: {
+      type: new GraphQLEnumType({
+        name: "SortByEnums",
+        values: {
+          date: { value: "createdAt" },
+          title: { value: "title" },
+          views: { value: "views" },
+        },
+      }),
+      defaultValue: "createdAt",
+    },
+  },
+});
+
 // EXPORTS
 module.exports = {
   PageInputType,
   PublishedInputType,
+  SortInputType,
 };

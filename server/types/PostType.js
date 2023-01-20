@@ -8,7 +8,7 @@ const {
 } = require("graphql");
 const { User } = require("../models");
 const UserType = require("./UserType");
-const { DateType, CommentType } = require("./UtilTypes");
+const { DateType, CommentType, ViewsType } = require("./UtilTypes");
 
 const PostType = new GraphQLObjectType({
   name: "Post",
@@ -29,7 +29,7 @@ const PostType = new GraphQLObjectType({
     published: { type: GraphQLBoolean },
     createdAt: { type: DateType },
     updatedAt: { type: DateType },
-    views: { type: GraphQLInt },
+    views: { type: ViewsType },
     author: {
       type: UserType,
       resolve(parent, args) {

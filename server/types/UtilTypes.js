@@ -5,6 +5,7 @@ const {
   GraphQLScalarType,
   GraphQLID,
 } = require("graphql");
+const simplifyNum = require("../utils/simplifyNum");
 
 const SocialLinksType = new GraphQLObjectType({
   name: "Links",
@@ -65,9 +66,17 @@ const CommentType = new GraphQLObjectType({
   }),
 });
 
+const ViewsType = new GraphQLScalarType({
+  name: "ViewsType",
+  serialize(value) {
+    return simplifyNum(value);
+  },
+});
+
 module.exports = {
   SocialLinksType,
   DateType,
   RoleType,
   CommentType,
+  ViewsType,
 };

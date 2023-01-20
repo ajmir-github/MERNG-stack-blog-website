@@ -1,7 +1,11 @@
 const { GraphQLList, GraphQLID, GraphQLNonNull } = require("graphql");
 const { User, Post } = require("../models");
 const { PostType } = require("../types");
-const { PageInputType, PublishedInputType } = require("./InputTypes");
+const {
+  PageInputType,
+  PublishedInputType,
+  SortInputType,
+} = require("./InputTypes");
 
 const postPopulate = [
   {
@@ -16,13 +20,18 @@ const posts = {
   args: {
     page: { type: PageInputType, defaultValue: { limit: 8, skip: 0 } },
     publish: { type: PublishedInputType, defaultValue: true },
+    sort: { type: SortInputType },
   },
   resolve(parent, args) {
     let findQuery = {};
+    const sort = {
+      [args.sort.by]: args.sort.order,
+    };
     // publish
     if (args.publish !== -1) findQuery.published = args.publish;
     // Apply
     return Post.find(findQuery)
+      .sort(sort)
       .limit(args.page.limit)
       .skip(args.page.skip)
       .populate(postPopulate);
