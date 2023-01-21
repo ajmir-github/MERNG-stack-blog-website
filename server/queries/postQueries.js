@@ -82,8 +82,11 @@ const post = {
   args: {
     _id: { type: GraphQLNonNull(GraphQLID) },
   },
-  resolve(parent, args) {
-    return Post.findById(args._id).populate(postPopulate);
+  async resolve(parent, args) {
+    const post = await Post.findById(args._id).populate(postPopulate);
+    post.views++;
+    await post.save();
+    return post;
   },
 };
 

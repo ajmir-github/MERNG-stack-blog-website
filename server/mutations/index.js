@@ -12,6 +12,7 @@ const mutation = new GraphQLObjectType({
     // ---- POSTS
     // add post
     addPost,
+    updatePost,
     // update post
     // delete post
   },
