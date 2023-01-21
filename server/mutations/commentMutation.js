@@ -9,7 +9,7 @@ const { Post } = require("../models");
 const { CommentType } = require("../types/UtilTypes");
 
 const addComment = {
-  type: GraphQLString,
+  type: GraphQLSCommentTypetring,
   args: {
     postId: { type: GraphQLNonNull(GraphQLID) },
     body: { type: GraphQLNonNull(GraphQLID) },
@@ -17,31 +17,27 @@ const addComment = {
     email: { type: GraphQLID },
   },
   async resolve(parent, { postId, body, name, email }, { user }) {
-    console.log({ user });
     try {
       const post = await Post.findById(postId);
       if (!post) throw "There is not user with the given id!";
       //
+      let comment = { body };
       if (user) {
-        post.comments.push({
-          author: {
-            userId: user._id,
-          },
-          body,
-        });
+        comment.author = {
+          userId: user._id,
+        };
       } else {
         if (!name || !email) throw "Please provide name and email!";
-        post.comments.push({
-          author: {
-            name,
-            email,
-          },
-          body,
-        });
+        comment.author = {
+          name,
+          email,
+        };
       }
+      post.comments.push(comment);
+      const createdCommment = post.comments.find((comment) => comment.isNew);
       // done
       await post.save();
-      return "A comment was made!";
+      return createdCommment;
     } catch (error) {
       return new Error(error);
     }
