@@ -1,11 +1,7 @@
-const {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLID,
-  graphql,
-  GraphQLList,
-} = require("graphql");
+const { GraphQLString, GraphQLObjectType, GraphQLID } = require("graphql");
+
 const { DateType, SocialLinksType, RoleType } = require("./UtilTypes");
+const { posts } = require("../queries/postQueries");
 
 const UserType = new GraphQLObjectType({
   name: "User",
@@ -20,6 +16,7 @@ const UserType = new GraphQLObjectType({
     links: { type: SocialLinksType },
     createdAt: { type: DateType },
     updatedAt: { type: DateType },
+    posts,
   }),
 });
 

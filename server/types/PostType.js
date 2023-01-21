@@ -4,10 +4,7 @@ const {
   GraphQLList,
   GraphQLBoolean,
   GraphQLID,
-  GraphQLInt,
 } = require("graphql");
-const { User } = require("../models");
-const UserType = require("./UserType");
 const { DateType, CommentType, ViewsType } = require("./UtilTypes");
 
 const PostType = new GraphQLObjectType({
@@ -36,7 +33,7 @@ const PostType = new GraphQLObjectType({
     updatedAt: { type: DateType },
     views: { type: ViewsType },
     author: {
-      type: UserType,
+      type: require("./UserType"), // direct import is to avoid circular error
       resolve(parent, args) {
         return parent.userId;
       },

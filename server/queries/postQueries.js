@@ -6,7 +6,7 @@ const {
   GraphQLBoolean,
 } = require("graphql");
 const { Post } = require("../models");
-const { PostType } = require("../types");
+// const { PostType } = require("../types");
 const {
   PageInputType,
   PublishedInputType,
@@ -22,7 +22,7 @@ const postPopulate = [
 
 // GET A LIST OF POSTS
 const posts = {
-  type: GraphQLList(PostType),
+  type: GraphQLList(require("../types/PostType")),
   args: {
     page: { type: PageInputType, defaultValue: { limit: 8, skip: 0 } },
     publish: { type: PublishedInputType, defaultValue: true },
@@ -51,15 +51,22 @@ const posts = {
     if (category) {
       findQuery.category = category;
     }
-    // has all the keywords given
-    if (!AnyKeyword) {
-      findQuery.keywords = { $all: keywords };
-    } else {
-      // has aleast on of the keywords
-      findQuery.$or = keywords.map((keyword) => ({
-        keywords: { $elemMatch: { $eq: keyword } },
-      }));
+
+    // keywords
+    if (keywords) {
+      // has all the keywords given
+      if (!AnyKeyword) {
+        findQuery.keywords = { $all: keywords };
+      } else {
+        // has aleast on of the keywords
+        findQuery.$or = keywords.map((keyword) => ({
+          keywords: { $elemMatch: { $eq: keyword } },
+        }));
+      }
     }
+    // if is nested in the user object
+    if (parent) findQuery.userId = parent._id;
+
     // Apply
     return Post.find(findQuery)
       .sort({ [sort.by]: sort.order })
@@ -71,7 +78,7 @@ const posts = {
 
 // GET SINGLE POST
 const post = {
-  type: PostType,
+  type: require("../types/PostType"),
   args: {
     _id: { type: GraphQLNonNull(GraphQLID) },
   },

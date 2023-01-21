@@ -1,37 +1,50 @@
 const {
   GraphQLList,
-  GraphQLInt,
   GraphQLNonNull,
   GraphQLID,
+  GraphQLString,
 } = require("graphql");
 const { User } = require("../models");
-const { UserType } = require("../types");
-const { PageInputType } = require("./InputTypes");
+const { PageInputType, SortUserInputType } = require("./InputTypes");
 
 // GET A LIST OF USERS
 const users = {
-  type: GraphQLList(UserType),
+  type: GraphQLList(require("../types/UserType")),
   args: {
-    page: {
-      type: PageInputType,
-      defaultValue: { limit: 8, skip: 0 },
+    page: { type: PageInputType, defaultValue: { limit: 8, skip: 0 } },
+    sort: {
+      type: SortUserInputType,
+      defaultValue: { order: -1, by: "createdAt" },
     },
+    search: { type: GraphQLString },
+    country: { type: GraphQLString },
   },
-  resolve(parent, args) {
-    return User.find().limit(args.page.limit).skip(args.page.skip);
+  resolve(parent, { page, sort, search, country }) {
+    const findQuery = {};
+    // search name
+    if (search)
+      findQuery.name = {
+        $regex: search,
+        $options: "ig",
+      };
+    // filter country
+    if (country) findQuery.country = country;
+    // Apply
+    return User.find(findQuery)
+      .sort({ [sort.by]: sort.order })
+      .limit(page.limit)
+      .skip(page.skip);
   },
 };
 
 // GET SINGLE USER
 const user = {
-  type: UserType,
+  type: require("../types/UserType"),
   args: {
     _id: { type: GraphQLNonNull(GraphQLID) },
-    limit: { type: GraphQLInt, defaultValue: 8 },
-    skip: { type: GraphQLInt, defaultValue: 0 },
   },
   resolve(parent, args) {
-    return User.findById(args._id).limit(args.limit).skip(args.skip);
+    return User.findById(args._id);
   },
 };
 // EXPORTS
