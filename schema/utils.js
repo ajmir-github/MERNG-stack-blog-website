@@ -16,6 +16,7 @@ const Collections = {
 const Roles = {
   admin: "Admin",
   user: "User",
+  deactivated: "Deactivated",
 };
 
 const RolesEnums = [Roles.admin, Roles.user];

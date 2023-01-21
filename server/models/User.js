@@ -5,10 +5,10 @@ const { Collections, Roles, RolesEnums, updateDate } = require("./utils");
 // ----------------- USER MODEL
 const UserSchema = new mongoose.Schema(
   {
-    email: String,
-    password: { type: String, default: "1234" },
+    email: { type: String, required: true, index: true, unique: true },
+    password: { type: String, required: true },
     role: { type: String, enum: RolesEnums, default: Roles.user },
-    name: String,
+    name: { type: String, required: true },
     country: String,
     bio: String,
     profile: String,

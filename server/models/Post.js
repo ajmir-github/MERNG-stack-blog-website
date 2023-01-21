@@ -9,7 +9,7 @@ const CommentSchema = new mongoose.Schema(
       name: String,
       email: String,
     },
-    body: String,
+    body: { type: String, required: true },
   },
   {
     timestamps: true,
@@ -22,8 +22,8 @@ CommentSchema.pre("update", updateDate);
 // ----------------- POST MODEL
 const PostSchema = new mongoose.Schema(
   {
-    title: String,
-    category: String,
+    title: { type: String, required: true },
+    category: { type: String, required: true, index: true },
     keywords: [String],
     description: String,
     thumbnail: String,
@@ -36,6 +36,7 @@ const PostSchema = new mongoose.Schema(
     userId: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: Collections.user,
+      required: true,
     },
     views: {
       type: Number,
