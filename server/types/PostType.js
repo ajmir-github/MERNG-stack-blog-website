@@ -16,7 +16,12 @@ const PostType = new GraphQLObjectType({
     _id: { type: GraphQLID },
     title: { type: GraphQLString },
     category: { type: GraphQLString },
-    keywords: { type: GraphQLList(GraphQLString) },
+    keywords: {
+      type: GraphQLList(GraphQLString),
+      resolve(parent) {
+        return parent.keywords;
+      },
+    },
     description: { type: GraphQLString },
     thumbnail: { type: GraphQLString },
     body: { type: GraphQLString },

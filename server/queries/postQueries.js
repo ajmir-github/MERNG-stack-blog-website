@@ -1,5 +1,11 @@
-const { GraphQLList, GraphQLID, GraphQLNonNull } = require("graphql");
-const { User, Post } = require("../models");
+const {
+  GraphQLList,
+  GraphQLID,
+  GraphQLNonNull,
+  GraphQLString,
+  GraphQLBoolean,
+} = require("graphql");
+const { Post } = require("../models");
 const { PostType } = require("../types");
 const {
   PageInputType,
@@ -20,20 +26,45 @@ const posts = {
   args: {
     page: { type: PageInputType, defaultValue: { limit: 8, skip: 0 } },
     publish: { type: PublishedInputType, defaultValue: true },
-    sort: { type: SortInputType },
+    sort: { type: SortInputType, defaultValue: { order: -1, by: "createdAt" } },
+    search: { type: GraphQLString },
+    category: { type: GraphQLString },
+    keywords: { type: GraphQLList(GraphQLString) },
+    AnyKeyword: { type: GraphQLBoolean, defaultValue: false },
   },
-  resolve(parent, args) {
+  resolve(
+    parent,
+    { sort, publish, page, search, category, keywords, AnyKeyword }
+  ) {
     let findQuery = {};
-    const sort = {
-      [args.sort.by]: args.sort.order,
-    };
     // publish
-    if (args.publish !== -1) findQuery.published = args.publish;
+    if (publish !== -1) findQuery.published = publish;
+    // search title and description
+    if (search) {
+      const pattern = {
+        $regex: search,
+        $options: "ig",
+      };
+      findQuery.$or = [{ title: pattern }, { description: pattern }];
+    }
+    // category
+    if (category) {
+      findQuery.category = category;
+    }
+    // has all the keywords given
+    if (!AnyKeyword) {
+      findQuery.keywords = { $all: keywords };
+    } else {
+      // has aleast on of the keywords
+      findQuery.$or = keywords.map((keyword) => ({
+        keywords: { $elemMatch: { $eq: keyword } },
+      }));
+    }
     // Apply
     return Post.find(findQuery)
-      .sort(sort)
-      .limit(args.page.limit)
-      .skip(args.page.skip)
+      .sort({ [sort.by]: sort.order })
+      .limit(page.limit)
+      .skip(page.skip)
       .populate(postPopulate);
   },
 };
