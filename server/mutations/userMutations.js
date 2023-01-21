@@ -55,10 +55,11 @@ const deleteUser = {
     const posts = await Post.find({ userId: _id }, "_id");
     const asyncFuncs = [];
     for (const post of posts) asyncFuncs.push(Post.findByIdAndDelete(post._id));
-
     // delete all the posts
     await Promise.allSettled(asyncFuncs);
+    // *** delete all the thumbnails of posts
     await user.delete();
+    // *** delete the profile image of user
     // survay the posts
     const postsLength = posts.length;
     return postsLength === 0

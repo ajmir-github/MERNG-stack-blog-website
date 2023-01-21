@@ -37,10 +37,20 @@ const updatePost = {
     published: { type: GraphQLBoolean },
   },
   resolve(parent, { _id, ...args }) {
+    // *** fs:delete the prevuois thumbnail
     return Post.findByIdAndUpdate(_id, args, { new: true });
   },
 };
-const deletePost = {};
+const deletePost = {
+  type: GraphQLString,
+  args: {
+    _id: { type: GraphQLNonNull(GraphQLID) },
+  },
+  // *** fs:delete the thumbnail
+  resolve(parent, { _id }) {
+    return Post.findByIdAndDelete(_id);
+  },
+};
 
 // EXPORTS
 module.exports = {
