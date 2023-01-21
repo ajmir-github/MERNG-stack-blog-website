@@ -18,7 +18,7 @@
     "graphql-middleware": "^6.1.33",
     "graphql-shield": "^7.6.5",
     "jsonwebtoken": "^9.0.0",
-    "mongoose": "^6.8.3"
+    "mongoose": "^6.8.4"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",

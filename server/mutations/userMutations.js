@@ -1,5 +1,6 @@
 const { GraphQLNonNull, GraphQLString, GraphQLID } = require("graphql");
 const { User, Post } = require("../models");
+const { hashPassword } = require("../utils/encrypt");
 const { SocialLinksInputType } = require("./utils");
 
 const addUser = {
@@ -9,8 +10,9 @@ const addUser = {
     password: { type: GraphQLNonNull(GraphQLString) },
     name: { type: GraphQLNonNull(GraphQLString) },
   },
-  resolve(parent, args) {
-    const user = new User(args);
+  async resolve(parent, args) {
+    const password = await hashPassword(args.password);
+    const user = new User({ ...args, password });
     return user.save();
   },
 };
@@ -27,7 +29,7 @@ const updateUser = {
     country: { type: GraphQLString },
     links: { type: SocialLinksInputType },
   },
-  resolve(parent, { _id, links, ...args }) {
+  async resolve(parent, { _id, links, ...args }) {
     let user = args;
     // if links
     if (links) {
@@ -36,6 +38,11 @@ const updateUser = {
         user["links." + key] = val;
       }
     }
+    // if password update
+    if (args.password) {
+      user.password = await hashPassword(args.password);
+    }
+
     return User.findByIdAndUpdate(_id, user, {
       new: true,
     });

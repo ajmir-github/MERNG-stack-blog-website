@@ -1,6 +1,7 @@
 const { GraphQLObjectType, GraphQLList } = require("graphql");
 const { users, user } = require("./userQueries");
 const { posts, post } = require("./postQueries");
+const { signIn, signInWithToken } = require("./authQueries");
 
 const RootQuery = new GraphQLObjectType({
   name: "Query",
@@ -11,6 +12,9 @@ const RootQuery = new GraphQLObjectType({
     // POSTS
     posts,
     post,
+    // AUTH
+    signIn,
+    signInWithToken,
   },
 });
 // EXPORTS

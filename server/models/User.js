@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { hashPassword } = require("../utils/encrypt");
 const { Collections, Roles, RolesEnums, updateDate } = require("./utils");
 
 // ----------------- USER MODEL
@@ -29,12 +28,6 @@ const UserSchema = new mongoose.Schema(
 // Middlewares
 
 UserSchema.pre("update", updateDate);
-
-UserSchema.pre("save", async function () {
-  // only hash the password
-  if (this.isModified("password"))
-    this.password = await hashPassword(this.password);
-});
 
 // ----------------- EXPORTS
 
