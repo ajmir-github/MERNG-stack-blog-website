@@ -27,7 +27,10 @@ const PostSchema = new mongoose.Schema(
     keywords: [String],
     description: String,
     thumbnail: String,
-    body: String,
+    body: {
+      type: String,
+      required: true,
+    },
     comments: [CommentSchema],
     published: {
       type: Boolean,
