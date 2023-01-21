@@ -3,12 +3,35 @@ const { User, Post } = require("../models");
 const jwt = require("jsonwebtoken");
 const { Roles } = require("../models");
 
-const isAuthenticated = rule({ cache: "contextual" })(
+const onlyAuthenticated = rule({ cache: "contextual" })(
   async (parent, args, context, info) => {
     try {
       // get and check AUTHORIZATION
       const { authorization } = context.headers;
       if (!authorization) throw "1:Access denied due to lack of access token!";
+      // get and check token
+      const token = authorization.replace("Bearer ", "");
+      if (!token)
+        throw "2:Authentication faild due to invalid access token provided!";
+      // verify token and get the user
+      const { userId } = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(userId);
+      if (!user) throw "3:Authetication failed due to absence of user!";
+      // save
+      context.user = user;
+      return true;
+    } catch (error) {
+      return new Error(error);
+    }
+  }
+);
+
+const isAuthenticated = rule({ cache: "contextual" })(
+  async (parent, args, context, info) => {
+    try {
+      // get and check AUTHORIZATION
+      const { authorization } = context.headers;
+      if (!authorization) return true;
       // get and check token
       const token = authorization.replace("Bearer ", "");
       if (!token)
@@ -53,4 +76,10 @@ const isOwnerOfPost = rule({ cache: "contextual" })(
 );
 
 // --- EXPORTS
-module.exports = { isAuthenticated, isAdmin, isOwnerOfUser, isOwnerOfPost };
+module.exports = {
+  onlyAuthenticated,
+  isAuthenticated,
+  isAdmin,
+  isOwnerOfUser,
+  isOwnerOfPost,
+};

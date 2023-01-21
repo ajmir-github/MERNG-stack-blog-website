@@ -1,5 +1,6 @@
 const { shield, allow, deny, chain, or } = require("graphql-shield");
 const {
+  onlyAuthenticated,
   isAuthenticated,
   isAdmin,
   isOwnerOfUser,
@@ -14,13 +15,15 @@ const premissions = shield(
     Mutation: {
       // "*": deny,
       // ---- USERS
-      addUser: chain(isAuthenticated, isAdmin),
-      updateUser: chain(isAuthenticated, or(isAdmin, isOwnerOfUser)),
-      deleteUser: chain(isAuthenticated, or(isAdmin, isOwnerOfUser)),
+      addUser: chain(onlyAuthenticated, isAdmin),
+      updateUser: chain(onlyAuthenticated, or(isAdmin, isOwnerOfUser)),
+      deleteUser: chain(onlyAuthenticated, or(isAdmin, isOwnerOfUser)),
       // ---- POSTS
-      addPost: chain(isAuthenticated),
-      updatePost: chain(isAuthenticated, or(isAdmin, isOwnerOfPost)),
-      deletePost: chain(isAuthenticated, or(isAdmin, isOwnerOfPost)),
+      addPost: onlyAuthenticated,
+      updatePost: chain(onlyAuthenticated, or(isAdmin, isOwnerOfPost)),
+      deletePost: chain(onlyAuthenticated, or(isAdmin, isOwnerOfPost)),
+      addComment: isAuthenticated,
+      deleteComment: onlyAuthenticated,
     },
   },
   {

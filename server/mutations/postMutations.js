@@ -6,6 +6,7 @@ const {
   GraphQLBoolean,
 } = require("graphql");
 const { Post } = require("../models");
+const { CommentType } = require("../types/UtilTypes");
 
 const addPost = {
   type: require("../types/PostType"),
@@ -27,7 +28,7 @@ const addPost = {
 const updatePost = {
   type: require("../types/PostType"),
   args: {
-    _id: { type: GraphQLNonNull(GraphQLID) },
+    postId: { type: GraphQLNonNull(GraphQLID) },
     title: { type: GraphQLString },
     body: { type: GraphQLString },
     category: { type: GraphQLString },
@@ -36,19 +37,19 @@ const updatePost = {
     thumbnail: { type: GraphQLString },
     published: { type: GraphQLBoolean },
   },
-  resolve(parent, { _id, ...args }) {
+  resolve(parent, { postId, ...args }) {
     // *** fs:delete the prevuois thumbnail
-    return Post.findByIdAndUpdate(_id, args, { new: true });
+    return Post.findByIdAndUpdate(postId, args, { new: true });
   },
 };
 const deletePost = {
   type: GraphQLString,
   args: {
-    _id: { type: GraphQLNonNull(GraphQLID) },
+    postId: { type: GraphQLNonNull(GraphQLID) },
   },
   // *** fs:delete the thumbnail
-  resolve(parent, { _id }) {
-    return Post.findByIdAndDelete(_id);
+  resolve(parent, { postId }) {
+    return Post.findByIdAndDelete(postId);
   },
 };
 

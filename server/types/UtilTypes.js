@@ -56,13 +56,14 @@ const CommentAuthorType = new GraphQLObjectType({
 const CommentType = new GraphQLObjectType({
   name: "Comment",
   fields: () => ({
+    _id: { type: GraphQLID },
+    body: { type: GraphQLString },
     author: {
       type: CommentAuthorType,
       resolve(parent) {
         return parent.author.userId || parent.author;
       },
     },
-    body: { type: GraphQLString },
   }),
 });
 
