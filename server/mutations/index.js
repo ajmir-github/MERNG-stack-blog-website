@@ -4,7 +4,7 @@ const {
   GraphQLString,
   GraphQLID,
 } = require("graphql");
-const { User } = require("../models");
+const { User, Post } = require("../models");
 const { SocialLinksInputType } = require("./utils");
 
 const mutation = new GraphQLObjectType({
@@ -53,12 +53,28 @@ const mutation = new GraphQLObjectType({
     },
     // delete user
     deleteUser: {
-      type: require("../types/UserType"),
+      type: GraphQLString,
       args: {
         _id: { type: GraphQLNonNull(GraphQLID) },
       },
-      resolve(parent, { _id }) {
-        return User.findByIdAndDelete(_id);
+      async resolve(parent, { _id }) {
+        const user = await User.findById(_id);
+        // make that the user exists
+        if (!user) return new Error("There is no user with the given id.");
+        // get the post and generate a sinlge promise
+        const posts = await Post.find({ userId: _id }, "_id");
+        const asyncFuncs = [];
+        for (const post of posts)
+          asyncFuncs.push(Post.findByIdAndDelete(post._id));
+
+        // delete all the posts
+        await Promise.allSettled(asyncFuncs);
+        await user.delete();
+        // survay the posts
+        const postsLength = posts.length;
+        return postsLength === 0
+          ? "The user deleted!"
+          : `The User with ${postsLength} post/s deleted!`;
       },
     },
     // ---- POSTS
