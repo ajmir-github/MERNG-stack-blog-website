@@ -2,6 +2,7 @@ const { GraphQLObjectType, GraphQLString, GraphQLNonNull } = require("graphql");
 const { User } = require("../models");
 const { matchPassword } = require("../utils/encrypt");
 const { signJWT, verfyJWT } = require("../utils/jwt");
+const jwt = require("jsonwebtoken");
 
 const UserTypeWithAuth = new GraphQLObjectType({
   name: "UserTypeWithAuth",
@@ -26,7 +27,9 @@ const signIn = {
     const matched = await matchPassword(password, user.password);
     if (!matched) return new Error("b:Password is not matched!");
     // sign token
-    const token = await signJWT(user._id.toString());
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
     return { user, token };
   },
 };
@@ -38,7 +41,7 @@ const signInWithToken = {
   },
   async resolve(parent, { token }) {
     // verify the hash
-    const userId = await verfyJWT(token);
+    const { userId } = jwt.verify(token, process.env.JWT_SECRET);
     // get user the user
     const user = await User.findById(userId);
     if (!user) return new Error("This email does not exists anymore!");

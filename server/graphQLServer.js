@@ -1,16 +1,20 @@
 const { graphqlHTTP } = require("express-graphql");
 const { GraphQLSchema } = require("graphql");
-const RootQuery = require("./queries");
+const query = require("./queries");
 const mutation = require("./mutations");
+const { applyMiddleware } = require("graphql-middleware");
+const premissions = require("./premissions");
 
 const schema = new GraphQLSchema({
-  query: RootQuery,
+  query,
   mutation,
 });
 
+const schemaWithPremissons = applyMiddleware(schema, premissions);
+
 // Setup GraphQL server
 module.exports = graphqlHTTP({
-  schema,
+  schema: schemaWithPremissons,
   graphiql: process.env.NODE_ENV === "development" && {
     // defaultQuery: true,
     headerEditorEnabled: true,

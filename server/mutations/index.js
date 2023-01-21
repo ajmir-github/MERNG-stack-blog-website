@@ -10,11 +10,9 @@ const mutation = new GraphQLObjectType({
     updateUser,
     deleteUser,
     // ---- POSTS
-    // add post
     addPost,
     updatePost,
-    // update post
-    // delete post
+    deletePost,
   },
 });
 

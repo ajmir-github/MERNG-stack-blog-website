@@ -3,7 +3,7 @@ const { users, user } = require("./userQueries");
 const { posts, post } = require("./postQueries");
 const { signIn, signInWithToken } = require("./authQueries");
 
-const RootQuery = new GraphQLObjectType({
+const query = new GraphQLObjectType({
   name: "Query",
   fields: {
     // USERS
@@ -18,4 +18,4 @@ const RootQuery = new GraphQLObjectType({
   },
 });
 // EXPORTS
-module.exports = RootQuery;
+module.exports = query;
