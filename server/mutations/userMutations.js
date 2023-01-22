@@ -20,7 +20,7 @@ const addUser = {
 const updateUser = {
   type: require("../types/UserType"),
   args: {
-    _id: { type: GraphQLNonNull(GraphQLID) },
+    userId: { type: GraphQLNonNull(GraphQLID) },
     email: { type: GraphQLString },
     password: { type: GraphQLString },
     name: { type: GraphQLString },
@@ -29,7 +29,8 @@ const updateUser = {
     country: { type: GraphQLString },
     links: { type: SocialLinksInputType },
   },
-  async resolve(parent, { _id, links, ...args }) {
+  async resolve(parent, { userId, links, ...args }) {
+    const selectedUser = new User.findById(userId);
     let user = args;
     // if links
     if (links) {
@@ -42,8 +43,11 @@ const updateUser = {
     if (args.password) {
       user.password = await hashPassword(args.password);
     }
+    // detele the previous file
+    if (args.profile && selectedUser.profile)
+      await deleteImage(selectedUser.profile);
 
-    return User.findByIdAndUpdate(_id, user, {
+    return User.findByIdAndUpdate(userId, user, {
       new: true,
     });
   },

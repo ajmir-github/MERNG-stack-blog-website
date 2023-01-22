@@ -36,8 +36,9 @@ const updatePost = {
     thumbnail: { type: GraphQLString },
     published: { type: GraphQLBoolean },
   },
-  resolve(parent, { postId, ...args }) {
-    // *** fs:delete the prevuois thumbnail
+  async resolve(parent, { postId, ...args }) {
+    const post = new Post.findById(postId);
+    if (args.thumbnail && post.thumbnail) await deleteImage(post.thumbnail);
     return Post.findByIdAndUpdate(postId, args, { new: true });
   },
 };
@@ -51,7 +52,7 @@ const deletePost = {
     if (!post) new Error("There is no post with the given id.");
     await post.delete();
     // thumbnail deletetion
-    if (post.thumbnail) deleteImage(post.thumbnail);
+    if (post.thumbnail) await deleteImage(post.thumbnail);
     // pack the comments
     const comments = await Comment.find({ postId: post._id });
     for (const comment of comments) {
