@@ -17,10 +17,7 @@ const Sizes = {
 
 function readImage(filePath) {
   return new Promise((resolve, reject) => {
-    Jimp.read(filePath, (err, img) => {
-      if (err) reject(err);
-      resolve(img);
-    });
+    Jimp.read(filePath, (err, img) => (err ? reject(err) : resolve(img)));
   });
 }
 

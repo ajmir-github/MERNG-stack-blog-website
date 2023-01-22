@@ -1,11 +1,7 @@
 // imports
 const express = require("express");
 // Middlewares
-const {
-  upload,
-  uploadMany,
-  destroyFile,
-} = require("../controllers/ImageStorage");
+const { upload, uploadMany, destroyFile } = require("./imageStorage");
 // Vars
 const router = express.Router();
 

@@ -1,10 +1,9 @@
 const { handleError } = require("../utils/handleError");
 const statusCodes = require("../utils/statusCodes");
-const { uploader, storageFolder } = require("../utils/imageUploader");
+const { uploader, storageFolder } = require("./imageUploader");
 const fs = require("fs/promises");
 const path = require("path");
-const multer = require("multer");
-const { optimizeImage } = require("../utils/optimizeImage");
+const { optimizeImage } = require("./optimizeImage");
 // Uploaders
 const singleFileUploader = uploader.single("image");
 const multiFileUploader = uploader.array("images");
