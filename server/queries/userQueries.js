@@ -41,10 +41,10 @@ const users = {
 const user = {
   type: require("../types/UserType"),
   args: {
-    _id: { type: GraphQLNonNull(GraphQLID) },
+    userId: { type: GraphQLNonNull(GraphQLID) },
   },
-  resolve(parent, args) {
-    return User.findById(args._id);
+  resolve(parent, { userId }) {
+    return User.findById(userId);
   },
 };
 // EXPORTS

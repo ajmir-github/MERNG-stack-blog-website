@@ -1,5 +1,5 @@
 const { rule } = require("graphql-shield");
-const { User, Post } = require("../models");
+const { User, Post, Comment } = require("../models");
 const jwt = require("jsonwebtoken");
 const { Roles } = require("../models");
 
@@ -50,27 +50,45 @@ const isAuthenticated = rule({ cache: "contextual" })(
 );
 
 const isAdmin = rule({ cache: "contextual" })(
-  async (parent, args, context, info) => {
-    return context.user.role === Roles.admin;
+  async (parent, args, { user }, info) => {
+    return user.role === Roles.admin;
   }
 );
 
 const isOwnerOfUser = rule({ cache: "contextual" })(
-  async (parent, args, context, info) => {
+  async (parent, { userId }, { user }, info) => {
+    console.log({ userId });
     return (
-      context.user._id.toString() === args._id ||
-      new Error("You are not the owner of this user account!")
+      user._id.toString() === userId ||
+      new Error("You are not the ower of this user.")
     );
   }
 );
 
 const isOwnerOfPost = rule({ cache: "contextual" })(
-  async (parent, args, context, info) => {
-    const postId = args._id;
+  async (parent, { postId }, { user }, info) => {
     const post = await Post.findById(postId, "userId");
     return (
-      context.user._id.toString() === post.userId.toString() ||
-      new Error("You are not the owner of this post!")
+      user._id.toString() === post.userId.toString() ||
+      new Error("You are not the ower of this post.")
+    );
+  }
+);
+
+const isOwnerOfComment = rule({ cache: "contextual" })(
+  async (parent, { commentId }, { user }, info) => {
+    const comment = await Comment.findById(commentId).populate({
+      path: "internalAuthor",
+      select: "_id",
+    });
+    if (!comment) return new Error("There is no comment with the given id.");
+    // if it has an external author
+    if (!comment.internalAuthor)
+      return new Error("You are not the ower of this comment.");
+    // if it has internal author, match its id
+    return (
+      comment.internalAuthor._id.toString() === user._id.toString() ||
+      new Error("You are not the ower of this comment.")
     );
   }
 );
@@ -82,4 +100,5 @@ module.exports = {
   isAdmin,
   isOwnerOfUser,
   isOwnerOfPost,
+  isOwnerOfComment,
 };

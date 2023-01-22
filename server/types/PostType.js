@@ -26,10 +26,10 @@ const PostType = new GraphQLObjectType({
     commnets: {
       type: GraphQLList(CommentType),
       resolve(parent, args) {
-        return Comment.find({ postId: parent._id }).populate(
-          "internalAuthor",
-          "_id name profile"
-        );
+        return Comment.find({ postId: parent._id }).populate({
+          path: "internalAuthor",
+          select: "_id name profile",
+        });
       },
     },
     published: { type: GraphQLBoolean },

@@ -1,10 +1,11 @@
-const { shield, allow, deny, chain, or } = require("graphql-shield");
+const { shield, allow, deny, chain, or, rule } = require("graphql-shield");
 const {
   onlyAuthenticated,
   isAuthenticated,
   isAdmin,
   isOwnerOfUser,
   isOwnerOfPost,
+  isOwnerOfComment,
 } = require("./rules");
 
 const premissions = shield(
@@ -16,14 +17,18 @@ const premissions = shield(
       // "*": deny,
       // ---- USERS
       addUser: chain(onlyAuthenticated, isAdmin),
-      updateUser: chain(onlyAuthenticated, or(isAdmin, isOwnerOfUser)),
-      deleteUser: chain(onlyAuthenticated, or(isAdmin, isOwnerOfUser)),
+      updateUser: chain(onlyAuthenticated, or(isOwnerOfUser, isAdmin)),
+      deleteUser: chain(onlyAuthenticated, or(isOwnerOfUser, isAdmin)),
       // ---- POSTS
       addPost: onlyAuthenticated,
-      updatePost: chain(onlyAuthenticated, or(isAdmin, isOwnerOfPost)),
-      deletePost: chain(onlyAuthenticated, or(isAdmin, isOwnerOfPost)),
+      updatePost: chain(onlyAuthenticated, or(isOwnerOfPost, isAdmin)),
+      deletePost: chain(onlyAuthenticated, or(isOwnerOfPost, isAdmin)),
+      // ---- COMMENTS
       addComment: isAuthenticated,
-      deleteComment: onlyAuthenticated,
+      deleteComment: chain(
+        onlyAuthenticated,
+        or(isOwnerOfComment, isOwnerOfPost, isAdmin)
+      ),
     },
   },
   {

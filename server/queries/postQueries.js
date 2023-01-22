@@ -73,10 +73,10 @@ const posts = {
 const post = {
   type: require("../types/PostType"),
   args: {
-    _id: { type: GraphQLNonNull(GraphQLID) },
+    postId: { type: GraphQLNonNull(GraphQLID) },
   },
-  async resolve(parent, args) {
-    const post = await Post.findById(args._id).populate("userId");
+  async resolve(parent, { postId }) {
+    const post = await Post.findById(postId).populate("userId");
     post.views++;
     await post.save();
     return post;

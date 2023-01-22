@@ -14,8 +14,7 @@ const schemaWithPremissons = applyMiddleware(schema, premissions);
 
 // Setup GraphQL server
 module.exports = graphqlHTTP({
-  // schema: schemaWithPremissons,
-  schema,
+  schema: schemaWithPremissons,
   graphiql: process.env.NODE_ENV === "development" && {
     // defaultQuery: true,
     headerEditorEnabled: true,
