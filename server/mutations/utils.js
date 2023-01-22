@@ -11,7 +11,7 @@ const SocialLinksInputType = new GraphQLInputObjectType({
   },
 });
 
-const deleteImage = (url) => {
+const deleteImage = async (url) => {
   console.log({
     action: "DELETE",
     url,

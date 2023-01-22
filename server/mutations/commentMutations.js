@@ -36,18 +36,32 @@ const addComment = {
     });
   },
 };
-const deleteComment = {
+
+const updateComment = {
   type: CommentType,
+  args: {
+    commentId: { type: GraphQLNonNull(GraphQLID) },
+    body: { type: GraphQLNonNull(GraphQLString) },
+  },
+  async resolve(parent, { commentId, body }) {
+    return Comment.findByIdAndUpdate(commentId, { body }, { new: true });
+  },
+};
+
+const deleteComment = {
+  type: GraphQLString,
   args: {
     postId: { type: GraphQLNonNull(GraphQLID) },
     commentId: { type: GraphQLNonNull(GraphQLID) },
   },
   async resolve(parent, { commentId }) {
-    return Comment.findByIdAndDelete(commentId);
+    await Comment.findByIdAndDelete(commentId);
+    return "The comment is deleted!";
   },
 };
 
 module.exports = {
   addComment,
+  updateComment,
   deleteComment,
 };

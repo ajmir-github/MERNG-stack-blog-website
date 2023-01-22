@@ -54,9 +54,9 @@ const deletePost = {
     if (post.thumbnail) deleteImage(post.thumbnail);
     // pack the comments
     const comments = await Comment.find({ postId: post._id });
-    await Promise.all(
-      comments.map((comment) => Comment.findByIdAndDelete(comment._id))
-    );
+    for (const comment of comments) {
+      await Comment.findByIdAndDelete(comment._id);
+    }
     // DONE
     return "The post was deleted!";
   },

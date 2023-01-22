@@ -157,9 +157,9 @@ mongoose.set("strictQuery", true);
 mongoose.connect(process.env.DATABASE_URL, async (err) => {
   if (err) throw err;
 
-  // await addUsers(5);
-  // await addPosts(50);
-  // await addComments(250);
+  // await addUsers(20);
+  // await addPosts(400);
+  // await addComments(800);
 
   // await logUsers();
   // await logPosts();

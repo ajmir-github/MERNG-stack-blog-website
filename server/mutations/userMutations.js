@@ -1,7 +1,7 @@
 const { GraphQLNonNull, GraphQLString, GraphQLID } = require("graphql");
 const { User, Post } = require("../models");
 const { hashPassword } = require("../utils/encrypt");
-const { SocialLinksInputType } = require("./utils");
+const { SocialLinksInputType, deleteImage } = require("./utils");
 
 const addUser = {
   type: require("../types/UserType"),
@@ -52,26 +52,28 @@ const updateUser = {
 const deleteUser = {
   type: GraphQLString,
   args: {
-    _id: { type: GraphQLNonNull(GraphQLID) },
+    userId: { type: GraphQLNonNull(GraphQLID) },
   },
-  async resolve(parent, { _id }) {
-    const user = await User.findById(_id);
-    // make that the user exists
+  async resolve(parent, { userId }) {
+    // -------- DELETE USER
+    const user = await User.findById(userId);
     if (!user) return new Error("There is no user with the given id.");
-    // get the post and generate a sinlge promise
-    const posts = await Post.find({ userId: _id }, "_id");
-    const asyncFuncs = [];
-    for (const post of posts) asyncFuncs.push(Post.findByIdAndDelete(post._id));
-    // delete all the posts
-    await Promise.allSettled(asyncFuncs);
-    // *** delete all the thumbnails of posts
     await user.delete();
-    // *** delete the profile image of user
+    if (user.profile) await deleteImage(user.profile);
+    // -------- DELETE POST
+    const posts = await Post.find({ userId });
+    for (const post of posts) {
+      await Post.findByIdAndDelete(post._id);
+      // thumbnail deletetion
+      if (post.thumbnail) await deleteImage(post.thumbnail);
+      // pack the comments
+      const comments = await Comment.find({ postId: post._id });
+      for (const comment of comments) {
+        await Comment.findByIdAndDelete(comment._id);
+      }
+    }
     // survay the posts
-    const postsLength = posts.length;
-    return postsLength === 0
-      ? "The user deleted!"
-      : `The User with ${postsLength} post/s is deleted!`;
+    return "The User with all posts is deleted!";
   },
 };
 
