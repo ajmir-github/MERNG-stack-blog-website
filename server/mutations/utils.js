@@ -11,6 +11,14 @@ const SocialLinksInputType = new GraphQLInputObjectType({
   },
 });
 
+const deleteImage = (url) => {
+  console.log({
+    action: "DELETE",
+    url,
+  });
+};
+
 module.exports = {
   SocialLinksInputType,
+  deleteImage,
 };

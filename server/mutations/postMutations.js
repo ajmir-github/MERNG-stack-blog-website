@@ -5,13 +5,12 @@ const {
   GraphQLList,
   GraphQLBoolean,
 } = require("graphql");
-const { Post } = require("../models");
-const { CommentType } = require("../types/UtilTypes");
+const { Post, Comment } = require("../models");
+const { deleteImage } = require("./utils");
 
 const addPost = {
   type: require("../types/PostType"),
   args: {
-    userId: { type: GraphQLNonNull(GraphQLID) },
     title: { type: GraphQLNonNull(GraphQLString) },
     body: { type: GraphQLNonNull(GraphQLString) },
     category: { type: GraphQLNonNull(GraphQLString) },
@@ -20,8 +19,8 @@ const addPost = {
     thumbnail: { type: GraphQLString },
     published: { type: GraphQLBoolean, defaultValue: false },
   },
-  resolve(parent, args) {
-    const post = new Post(args);
+  resolve(parent, args, { user }) {
+    const post = new Post({ ...args, userId: user._id });
     return post.save();
   },
 };
@@ -47,9 +46,19 @@ const deletePost = {
   args: {
     postId: { type: GraphQLNonNull(GraphQLID) },
   },
-  // *** fs:delete the thumbnail
-  resolve(parent, { postId }) {
-    return Post.findByIdAndDelete(postId);
+  async resolve(parent, { postId }) {
+    const post = await Post.findById(postId);
+    if (!post) new Error("There is no post with the given id.");
+    await post.delete();
+    // thumbnail deletetion
+    if (post.thumbnail) deleteImage(post.thumbnail);
+    // pack the comments
+    const comments = await Comment.find({ postId: post._id });
+    await Promise.all(
+      comments.map((comment) => Comment.findByIdAndDelete(comment._id))
+    );
+    // DONE
+    return "The post was deleted!";
   },
 };
 

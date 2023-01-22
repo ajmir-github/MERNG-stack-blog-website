@@ -57,7 +57,6 @@ const isAdmin = rule({ cache: "contextual" })(
 
 const isOwnerOfUser = rule({ cache: "contextual" })(
   async (parent, { userId }, { user }, info) => {
-    console.log({ userId });
     return (
       user._id.toString() === userId ||
       new Error("You are not the ower of this user.")
@@ -68,6 +67,7 @@ const isOwnerOfUser = rule({ cache: "contextual" })(
 const isOwnerOfPost = rule({ cache: "contextual" })(
   async (parent, { postId }, { user }, info) => {
     const post = await Post.findById(postId, "userId");
+    if (!post) return new Error("There is no post with the given id.");
     return (
       user._id.toString() === post.userId.toString() ||
       new Error("You are not the ower of this post.")
