@@ -5,6 +5,7 @@ const {
   GraphQLBoolean,
   GraphQLID,
 } = require("graphql");
+const { Comment } = require("../models");
 const { DateType, CommentType, ViewsType } = require("./UtilTypes");
 
 const PostType = new GraphQLObjectType({
@@ -25,7 +26,10 @@ const PostType = new GraphQLObjectType({
     commnets: {
       type: GraphQLList(CommentType),
       resolve(parent, args) {
-        return parent.comments;
+        return Comment.find({ postId: parent._id }).populate(
+          "internalAuthor",
+          "_id name profile"
+        );
       },
     },
     published: { type: GraphQLBoolean },

@@ -34,15 +34,6 @@ const RoleType = new GraphQLEnumType({
   },
 });
 
-const AuthorType = new GraphQLObjectType({
-  name: "AuthorType",
-  fields: () => ({
-    name: { type: GraphQLString },
-    email: { type: GraphQLString },
-    profile: { type: GraphQLString },
-  }),
-});
-
 const CommentAuthorType = new GraphQLObjectType({
   name: "CommentAuthor",
   fields: () => ({
@@ -57,13 +48,14 @@ const CommentType = new GraphQLObjectType({
   name: "Comment",
   fields: () => ({
     _id: { type: GraphQLID },
-    body: { type: GraphQLString },
+    postId: { type: GraphQLID },
     author: {
       type: CommentAuthorType,
-      resolve(parent) {
-        return parent.author.userId || parent.author;
+      resolve(parent, args) {
+        return parent.internalAuthor || parent.externalAuthor;
       },
     },
+    body: { type: GraphQLString },
   }),
 });
 

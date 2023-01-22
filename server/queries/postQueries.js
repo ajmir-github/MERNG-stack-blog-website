@@ -13,13 +13,6 @@ const {
   SortInputType,
 } = require("./InputTypes");
 
-const postPopulate = [
-  {
-    path: "userId",
-  },
-  { path: "comments.author.userId", select: "name email profile _id" },
-];
-
 // GET A LIST OF POSTS
 const posts = {
   type: GraphQLList(require("../types/PostType")),
@@ -72,7 +65,7 @@ const posts = {
       .sort({ [sort.by]: sort.order })
       .limit(page.limit)
       .skip(page.skip)
-      .populate(postPopulate);
+      .populate("userId");
   },
 };
 
@@ -83,7 +76,7 @@ const post = {
     _id: { type: GraphQLNonNull(GraphQLID) },
   },
   async resolve(parent, args) {
-    const post = await Post.findById(args._id).populate(postPopulate);
+    const post = await Post.findById(args._id).populate("userId");
     post.views++;
     await post.save();
     return post;
