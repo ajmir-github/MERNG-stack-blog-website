@@ -1,24 +1,6 @@
 const mongoose = require("mongoose");
 const { Collections, updateDate } = require("./utils");
 
-// ----------------- COMMENT SUB-DOC
-const CommentSchema = new mongoose.Schema(
-  {
-    author: {
-      userId: { type: mongoose.SchemaTypes.ObjectId, ref: Collections.user },
-      name: String,
-      email: String,
-    },
-    body: { type: String, required: true },
-  },
-  {
-    timestamps: true,
-    versionKey: false,
-  }
-);
-
-CommentSchema.pre("update", updateDate);
-
 // ----------------- POST MODEL
 const PostSchema = new mongoose.Schema(
   {
@@ -31,7 +13,6 @@ const PostSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    comments: [CommentSchema],
     published: {
       type: Boolean,
       default: false,

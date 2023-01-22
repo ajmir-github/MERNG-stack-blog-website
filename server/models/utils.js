@@ -1,6 +1,7 @@
 const Collections = {
   user: "User",
   post: "Post",
+  comment: "Comment",
 };
 
 const Roles = {
