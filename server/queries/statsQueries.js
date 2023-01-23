@@ -18,7 +18,7 @@ const CountStatsType = new GraphQLObjectType({
 const KeywordStatsType = new GraphQLObjectType({
   name: "KeywordStatsType",
   fields: () => ({
-    Keyword: { type: GraphQLString },
+    keyword: { type: GraphQLString },
     count: { type: GraphQLInt },
   }),
 });
