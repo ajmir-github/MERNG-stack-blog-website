@@ -168,4 +168,5 @@ mongoose.connect(process.env.DATABASE_URL, async (err) => {
   // await cleanUsers();
   // await cleanPosts();
   // await cleanComments();
+  // getStats();
 });

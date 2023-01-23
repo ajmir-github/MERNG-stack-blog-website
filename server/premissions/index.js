@@ -6,6 +6,7 @@ const {
   isOwnerOfUser,
   isOwnerOfPost,
   isOwnerOfComment,
+  isRoot,
 } = require("./rules");
 
 const premissions = shield(
@@ -14,11 +15,10 @@ const premissions = shield(
       "*": allow,
     },
     Mutation: {
-      // "*": deny,
       // ---- USERS
-      addUser: chain(onlyAuthenticated, isAdmin),
-      updateUser: chain(onlyAuthenticated, or(isOwnerOfUser, isAdmin)),
-      deleteUser: chain(onlyAuthenticated, or(isOwnerOfUser, isAdmin)),
+      addUser: allow,
+      updateUser: chain(onlyAuthenticated, or(isOwnerOfUser, isRoot)),
+      deleteUser: chain(onlyAuthenticated, or(isOwnerOfUser, isRoot)),
       // ---- POSTS
       addPost: onlyAuthenticated,
       updatePost: chain(onlyAuthenticated, or(isOwnerOfPost, isAdmin)),
@@ -29,6 +29,8 @@ const premissions = shield(
         onlyAuthenticated,
         or(isOwnerOfComment, isOwnerOfPost, isAdmin)
       ),
+      // ---- Premissions
+      grantPermission: chain(onlyAuthenticated, isRoot),
     },
   },
   {

@@ -5,7 +5,7 @@ const {
   GraphQLList,
   GraphQLBoolean,
 } = require("graphql");
-const { Post, Comment } = require("../models");
+const { Post, Comment, Stats } = require("../models");
 const { CommentType } = require("../types/UtilTypes");
 
 const addComment = {
@@ -23,12 +23,15 @@ const addComment = {
       comment.internalAuthor = user._id;
     } else {
       // externalAuthor
-      if (!name || !email) throw "Please defined your name and email.";
+      if (!name || !email)
+        return new Error("Please defined your name and email.");
       comment.externalAuthor = {
         name,
         email,
       };
     }
+    // update the stats
+    Stats.update();
     // Create
     return (await Comment.create(comment)).populate({
       path: "internalAuthor",

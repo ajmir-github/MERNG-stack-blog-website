@@ -54,6 +54,11 @@ const isAdmin = rule({ cache: "contextual" })(
     return user.role === Roles.admin;
   }
 );
+const isRoot = rule({ cache: "contextual" })(
+  async (parent, args, { user }, info) => {
+    return user.role === Roles.root;
+  }
+);
 
 const isOwnerOfUser = rule({ cache: "contextual" })(
   async (parent, { userId }, { user }, info) => {
@@ -101,4 +106,5 @@ module.exports = {
   isOwnerOfUser,
   isOwnerOfPost,
   isOwnerOfComment,
+  isRoot,
 };

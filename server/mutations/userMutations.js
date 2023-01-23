@@ -1,5 +1,10 @@
-const { GraphQLNonNull, GraphQLString, GraphQLID } = require("graphql");
-const { User, Post } = require("../models");
+const {
+  GraphQLNonNull,
+  GraphQLString,
+  GraphQLID,
+  GraphQLEnumType,
+} = require("graphql");
+const { User, Post, Roles, Stats } = require("../models");
 const { hashPassword } = require("../utils/encrypt");
 const { SocialLinksInputType, deleteImage } = require("./utils");
 
@@ -13,6 +18,8 @@ const addUser = {
   async resolve(parent, args) {
     const password = await hashPassword(args.password);
     const user = new User({ ...args, password });
+    // update the stats
+    Stats.update();
     return user.save();
   },
 };

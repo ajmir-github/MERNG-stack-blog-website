@@ -5,7 +5,7 @@ const {
   GraphQLList,
   GraphQLBoolean,
 } = require("graphql");
-const { Post, Comment } = require("../models");
+const { Post, Comment, Stats } = require("../models");
 const { deleteImage } = require("./utils");
 
 const addPost = {
@@ -21,6 +21,8 @@ const addPost = {
   },
   resolve(parent, args, { user }) {
     const post = new Post({ ...args, userId: user._id });
+    // update the stats
+    Stats.update();
     return post.save();
   },
 };
