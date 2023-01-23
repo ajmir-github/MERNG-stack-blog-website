@@ -28,7 +28,6 @@ async function getKeywordsWithCount() {
       count: await Post.count({ keywords: keyword }),
     }))
   );
-  console.log(keywordsWithCount);
   return keywordsWithCount.sort((a, b) => b.count - a.count);
 }
 
@@ -37,9 +36,7 @@ class Statistics {
     this.count = {};
     this.categories = [];
     this.keywords = [];
-    setTimeout(() => {
-      this.update();
-    }, 5000);
+    this.update();
   }
   async update() {
     this.count = await getDocumentsCount();
