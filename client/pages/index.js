@@ -4,7 +4,14 @@ import useCookies from "react-cookie/cjs/useCookies";
 import BlogsContainer from "../components/BlogsContainer";
 import { useQuery, gql } from "@apollo/client";
 import Image from "next/image";
-import { ThreeDotsVertical, Eye, Tags } from "react-bootstrap-icons";
+import {
+  ThreeDotsVertical,
+  Eye,
+  Tags,
+  Bookmark,
+  ChatText,
+  ArrowRight,
+} from "react-bootstrap-icons";
 
 const getPostsQueryWithStats = gql`
   {
@@ -103,72 +110,114 @@ function PostCard({
   category,
   description,
   thumbnail,
-  author, //_id,nameprofile
+  author, //_id,name profile
   views,
   keywords,
   createdAt,
 }) {
   const editable = 1;
-  return (
-    <div className="flex flex-col w-full rounded-2xl overflow-hidden">
-      <div className="w-full">
-        <Image
-          src={thumbnail}
-          width={400}
-          height={400}
-          className="w-full h-full aspect-square"
-          alt={title}
-        />
-      </div>
-      <div className="w-full bg-base-100 p-4 flex flex-col gap-2 justify-between">
-        {/* TOP */}
-        <div className="flex w-full items-center">
-          <Link className="flex  gap-4 grow items-center" href={author._id}>
-            <div className="avatar ">
-              <div className="w-14 rounded-full ring ring-offset-base-100 ring-offset-1 ">
-                <Image src={thumbnail} width={48} height={48} />
-              </div>
-            </div>
-            <div className="grow">
-              <h4 className="hover:text-primary">{author.name}</h4>
-              <p className="text-sm opacity-50">
-                {new Date(createdAt).toDateString()}
-              </p>
-            </div>
-          </Link>
-          {editable && (
-            <div>
-              <button className="btn btn-circle btn-ghost">
-                <ThreeDotsVertical size={18} />
-              </button>
-            </div>
-          )}
+  const authorElement = (
+    <>
+      {author.profile && (
+        <div className="avatar ">
+          <div className="w-14 rounded-full ring ring-offset-base-100 ring-offset-1 hover:ring-primary transition-colors">
+            <Image
+              src={author.profile || "/assets/user.png"}
+              width={48}
+              height={48}
+            />
+          </div>
         </div>
+      )}
+      <div className="grow">
+        <h4 className=" text-lg font-bold">{author.name}</h4>
+        <p className="text-gray-400 text-md">{createdAt.date}</p>
+      </div>
+    </>
+  );
+  return (
+    <div className="grid grid-cols-1 rounded-2xl overflow-hidden bg-base-100 gap-2">
+      {/* top: user, date, func to edit and delete */}
+      <div className="flex w-full items-center justify-end p-4 md:p-6 lg:p-6">
+        {author && author._id ? (
+          <Link
+            className="flex gap-4 grow items-center"
+            href={`/user/${author._id}`}
+          >
+            {authorElement}
+          </Link>
+        ) : (
+          <div className="flex gap-4 grow items-center">{authorElement}</div>
+        )}
+
+        {editable && (
+          <div>
+            <button className="btn btn-circle btn-ghost">
+              <ThreeDotsVertical size={18} />
+            </button>
+          </div>
+        )}
+      </div>
+      {/* middle: image */}
+      {thumbnail && (
+        <div className="w-full">
+          <Image
+            src={thumbnail}
+            width={400}
+            height={400}
+            className="w-full aspect-video"
+            alt={title}
+          />
+        </div>
+      )}
+      {/* bottom: title, desctiption, category, keywords, views */}
+      <div className="w-full p-4 md:p-6 flex flex-col gap-2 justify-between">
         {/* Descriptions */}
         <div className="flex flex-col gap-2">
-          <h1 className="text-2xl">{title}</h1>
-          <div className="flex">
-            <div className="grow flex">{category}</div>
-          </div>
+          <h1 className="text-2xl font-bold">{title}</h1>
           <p className="text-md text-gray-400">{description}</p>
         </div>
 
-        {keywords && keywords.length > 0 && (
-          <div className="flex justify-start items-center gap-2 flex-wrap">
-            <Tags size={18} />
-            {keywords.map((keyword) => (
-              <Link className="btn btn-xs" href={`/?keyword=${keyword}`}>
-                {keyword}
+        <div className="flex justify-start items-center gap-2 flex-wrap">
+          {category && (
+            <Link
+              className="btn btn-xs btn-primary flex gap-2"
+              href={`/category/${category}`}
+            >
+              <Bookmark /> {category}
+            </Link>
+          )}
+          {keywords &&
+            keywords.map((keyword) => (
+              <Link
+                className="btn btn-xs btn-ghost gap-2"
+                href={`/keyword/${keyword}`}
+              >
+                <Tags size={14} /> {keyword}
               </Link>
             ))}
-          </div>
-        )}
+        </div>
+
         {/* bottom */}
-        <div className="flex justify-end">
-          <div className="flex items-center gap-2 text-gray-500">
-            <Eye />
-            {views}
+        <div className="flex gap-2">
+          <div className="btn-group grow">
+            <Link className="btn btn-ghost gap-4 w-1/2" href={`/post/${_id}`}>
+              <ArrowRight size={18} /> View
+            </Link>
+            <Link
+              className="btn btn-ghost gap-4 w-1/2"
+              href={`/post/${_id}#make-comment`}
+            >
+              <ChatText size={18} />
+              Comment
+            </Link>
           </div>
+          {views && (
+            <div className="flex items-center gap-2 text-gray-400">
+              <Eye />
+              {views}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -177,7 +226,7 @@ function PostCard({
 
 function PostsContainer({ posts }) {
   return (
-    <div className="grid grid-cols-1  lg:grid-cols-2 xl:grid-cols-3 gap-2">
+    <div className="grid grid-cols-1 gap-y-2">
       {posts.map((post) => (
         <PostCard key={post._id} {...post} />
       ))}
@@ -190,18 +239,27 @@ export default function Home() {
 
   if (loading)
     return (
-      <div>
-        <h2>Loading</h2>
+      <div className="flex justify-center p-10">
+        <button className="btn btn-ghost btn-xl loading"></button>
       </div>
     );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-2 p-2">
-      <div className="lg:col-span-4 xl:col-span-3 md:order-2">
-        {data.stats && <SideContainer stats={data.stats} />}
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-2 p-2">
+      <div className="grid grid-cols-1 lg:grid-cols-12 md:col-span-8 lg:col-span-9 xl:col-span-10 gap-y-2 lg:gap-x-2">
+        <div className="col-span-4 xl:col-span-3">
+          <div className="lg:sticky lg:top-[1rem]">
+            {data.stats && <SideContainer stats={data.stats} />}
+          </div>
+        </div>
+        <div className="col-span-8 xl:col-span-9">
+          {data.posts && <PostsContainer posts={data.posts} />}
+        </div>
       </div>
-      <div className="lg:col-span-8 xl:col-span-9 md:order-1">
-        {data.posts && <PostsContainer posts={data.posts} />}
+      <div className="md:col-span-4 lg:col-span-3 xl:col-span-2">
+        <div className="md:sticky md:top-[1rem]">
+          {data.stats && <SideContainer stats={data.stats} />}
+        </div>
       </div>
     </div>
   );
