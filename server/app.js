@@ -4,6 +4,7 @@ const graphQLServer = require("./graphQLServer");
 const storage = require("./storage");
 const { handleError } = require("./utils/handleError");
 const statusCodes = require("./utils/statusCodes");
+const cors = require("cors");
 
 function createApp() {
   const app = express();
@@ -11,6 +12,14 @@ function createApp() {
   app.use(express.static(path.join(__dirname, "public")));
   app.use(express.json()); // req.body
   app.use(express.urlencoded({ extended: false })); // req.body from a form
+
+  // CORs
+  app.use(
+    cors({
+      origin: "*",
+      methods: "*",
+    })
+  );
 
   // GraphQL Server setup
   app.use("/graphql", graphQLServer);

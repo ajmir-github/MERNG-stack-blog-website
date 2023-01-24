@@ -5,6 +5,7 @@ const {
   GraphQLScalarType,
   GraphQLID,
 } = require("graphql");
+const date = require("date-and-time");
 const simplifyNum = require("../utils/simplifyNum");
 
 const SocialLinksType = new GraphQLObjectType({
@@ -21,7 +22,10 @@ const SocialLinksType = new GraphQLObjectType({
 const DateType = new GraphQLScalarType({
   name: "DateType",
   serialize(value) {
-    return value.toJSON();
+    return {
+      date: date.format(value, "DD MMM, YYYY"),
+      time: value,
+    };
   },
 });
 
