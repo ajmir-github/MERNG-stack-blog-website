@@ -47,7 +47,7 @@ export default function Navbar() {
   return (
     <>
       <LoginModel open={loginModal} hanldeClose={closeLoginModal} />
-      <div className="navbar backdrop-blur p-2 md:p-4 lg:py-8">
+      <div className="navbar backdrop-blur">
         <div className="navbar-start">
           <div className="dropdown">
             <label tabIndex={0} className="btn btn-ghost lg:hidden">
