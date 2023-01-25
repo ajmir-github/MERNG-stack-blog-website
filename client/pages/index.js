@@ -11,11 +11,17 @@ import {
   Bookmark,
   ChatText,
   ArrowRight,
+  Tag,
+  Bookmarks,
+  ArrowBarDown,
+  ArrowDown,
+  People,
+  CardText,
 } from "react-bootstrap-icons";
 
 const getPostsQueryWithStats = gql`
   {
-    posts(page: { limit: 15 }) {
+    posts(page: { limit: 24 }) {
       _id
       title
       category
@@ -30,7 +36,7 @@ const getPostsQueryWithStats = gql`
       views
       keywords
     }
-    stats(categoriesLimit: 8, keywordsLimit: 16) {
+    stats(categoriesLimit: 12, keywordsLimit: 24) {
       count {
         users
         posts
@@ -48,10 +54,54 @@ const getPostsQueryWithStats = gql`
   }
 `;
 
-function SideContainer({ stats: { count, categories, keywords } }) {
+function LeftSideContainer({ categories, keywords }) {
   return (
-    <div className="flex flex-col gap-2">
-      {/* one */}
+    <div className="grid gap-2">
+      {/* categories */}
+      <div className="grid bg-base-100 p-4 rounded-box gap-2">
+        <div className="btn btn-primary gap-2 btn-sm">
+          <Bookmarks />
+          All categories
+        </div>
+        <div className="flex flex-wrap gap-1">
+          {categories.map(({ category, count }) => (
+            <Link
+              href={`/category/${category}`}
+              className="btn btn-ghost btn-xs gap-1"
+            >
+              <Bookmark />
+              {category}{" "}
+              <span className="badge badge-ghost badge-xs">{count}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* categories */}
+      <div className="grid bg-base-100 p-4 rounded-box gap-2">
+        <div className="btn gap-2 btn-secondary btn-sm">
+          <Tags /> All tags
+        </div>
+        <div className="flex flex-wrap gap-1">
+          {keywords.map(({ keyword, count }) => (
+            <Link
+              href={`/keyword/${keyword}`}
+              className="btn btn-ghost btn-xs gap-1"
+            >
+              <Tag />
+              {keyword}{" "}
+              <span className="badge badge-ghost badge-xs">{count}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+function RightSideContainer({ count }) {
+  return (
+    <div className="flex flex-col gap-2 ">
+      {/* Register */}
       <div className="alert shadow">
         <div>
           <svg
@@ -70,12 +120,14 @@ function SideContainer({ stats: { count, categories, keywords } }) {
           <div>
             <h3 className="font-bold">Attention!</h3>
             <div className="text-xs">
-              You can become a blogger by sign up in this website
+              You can be a blogger of this website by signin up
             </div>
           </div>
         </div>
         <div className="flex-none">
-          <button className="btn btn-sm btn-primary">Sign Up</button>
+          <Link href={"/signup"} className="btn btn-sm btn-ghost">
+            Sign up
+          </Link>
         </div>
       </div>
       {/* two */}
@@ -83,20 +135,27 @@ function SideContainer({ stats: { count, categories, keywords } }) {
         <div className="stat">
           <div className="stat-title">Users</div>
           <div className="stat-value">{count.users}</div>
-          <div className="stat-desc">The number of registered users</div>
+          <div className="stat-desc">+12 This month</div>
+          <div className="stat-figure text-secondary">
+            <People size={32} />
+          </div>
         </div>
 
         <div className="stat">
           <div className="stat-title">Posts</div>
           <div className="stat-value">{count.posts}</div>
-          <div className="stat-desc">The number of post made so far</div>
+          <div className="stat-desc">+100 This month</div>
+          <div className="stat-figure text-secondary">
+            <CardText size={32} />
+          </div>
         </div>
 
         <div className="stat">
           <div className="stat-title">Comments</div>
           <div className="stat-value">{count.comments}</div>
-          <div className="stat-desc">
-            The number of comments make on the posts
+          <div className="stat-desc">+234 This month</div>
+          <div className="stat-figure text-secondary">
+            <ChatText size={32} />
           </div>
         </div>
       </div>
@@ -226,10 +285,14 @@ function PostCard({
 
 function PostsContainer({ posts }) {
   return (
-    <div className="grid grid-cols-1 gap-y-2">
+    <div className="grid gap-y-2">
       {posts.map((post) => (
         <PostCard key={post._id} {...post} />
       ))}
+
+      <button className="btn btn-primary gap-2">
+        <ArrowDown size={18} /> Load More
+      </button>
     </div>
   );
 }
@@ -246,19 +309,29 @@ export default function Home() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-2 p-2">
-      <div className="grid grid-cols-1 lg:grid-cols-12 md:col-span-8 lg:col-span-9 xl:col-span-10 gap-y-2 lg:gap-x-2">
-        <div className="col-span-4 xl:col-span-3">
+      {/* left and main */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 md:col-span-8 lg:col-span-9 gap-y-2 lg:gap-x-2">
+        {/* Left */}
+        <div className="col-span-4">
           <div className="lg:sticky lg:top-[1rem]">
-            {data.stats && <SideContainer stats={data.stats} />}
+            {data.stats && (
+              <LeftSideContainer
+                categories={data.stats.categories}
+                keywords={data.stats.keywords}
+              />
+            )}
           </div>
         </div>
-        <div className="col-span-8 xl:col-span-9">
+        {/* main */}
+        <div className="col-span-8">
           {data.posts && <PostsContainer posts={data.posts} />}
         </div>
       </div>
-      <div className="md:col-span-4 lg:col-span-3 xl:col-span-2">
+
+      {/* Right */}
+      <div className="md:col-span-4 lg:col-span-3  ">
         <div className="md:sticky md:top-[1rem]">
-          {data.stats && <SideContainer stats={data.stats} />}
+          {data.stats && <RightSideContainer count={data.stats.count} />}
         </div>
       </div>
     </div>
