@@ -15,6 +15,5 @@ export default function useDarkMode(defaultMode = false) {
     }
   }, [mode]);
   // return [mode, turnDarkMode, turnLightMode, toggleMode];
-  console.log({ mode });
   return [mode, toggleMode];
 }
