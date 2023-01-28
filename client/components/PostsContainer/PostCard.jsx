@@ -8,6 +8,7 @@ import {
   ChatText,
   ArrowRight,
 } from "react-bootstrap-icons";
+import { boxClasses, classes } from "../../styles";
 
 export default function PostCard({
   _id,
@@ -41,7 +42,9 @@ export default function PostCard({
     </>
   );
   return (
-    <div className="grid grid-cols-1 rounded-2xl overflow-hidden bg-base-100 gap-2">
+    <div
+      className={classes("grid grid-cols-1 overflow-hidden gap-2", boxClasses)}
+    >
       {/* top: user, date, func to edit and delete */}
       <div className="flex w-full items-center justify-end p-4 md:p-6 lg:p-6">
         {author && author._id ? (

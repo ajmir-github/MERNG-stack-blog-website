@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { Tags, Bookmark, Tag, Bookmarks } from "react-bootstrap-icons";
+import { boxClasses, classes } from "../../styles";
 
 export default function LeftSideContainer({ categories, keywords }) {
   return (
     <div className="grid gap-2">
       {/* categories */}
-      <div className="grid bg-base-100 p-4 rounded-box gap-2">
+      <div className={classes("grid gap-2", boxClasses)}>
         <div className="btn btn-primary gap-2 btn-sm">
           <Bookmarks />
           All categories
@@ -25,7 +26,7 @@ export default function LeftSideContainer({ categories, keywords }) {
       </div>
 
       {/* categories */}
-      <div className="grid bg-base-100 p-4 rounded-box gap-2">
+      <div className={classes("grid gap-2", boxClasses)}>
         <div className="btn gap-2 btn-secondary btn-sm">
           <Tags /> All tags
         </div>

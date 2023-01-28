@@ -8,6 +8,7 @@ import {
   Code,
   ArrowRight,
 } from "react-bootstrap-icons";
+import useDarkMode from "../../hooks/useDarkMode";
 
 function classes(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -35,6 +36,7 @@ const LoginModel = ({ open, hanldeClose }) => {
 };
 
 export default function Navbar() {
+  const [theme, toggleTheme] = useDarkMode();
   const [signed, setSigned] = useState(0);
   const [loginModal, setLoginModal] = useState(false);
   const openLoginModal = () => {
@@ -48,7 +50,7 @@ export default function Navbar() {
     <>
       <LoginModel open={loginModal} hanldeClose={closeLoginModal} />
       <div className="flex justify-between px-1">
-        <div className="btn btn-ghost gap-2">
+        <button className="btn btn-ghost gap-2" onClick={toggleTheme}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5"
@@ -65,7 +67,7 @@ export default function Navbar() {
           </svg>
 
           <span className="hidden sm:block">Menu</span>
-        </div>
+        </button>
 
         <Link className="btn btn-ghost upper-case text-xl" href="/">
           <span className="hidden sm:block">Afghan Code Camp</span>

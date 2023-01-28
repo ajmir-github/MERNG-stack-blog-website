@@ -8,6 +8,7 @@ module.exports = {
     extend: {},
   },
 
+  darkMode: "class",
   // daisyUI config (optional)
   daisyui: {
     styled: true,
