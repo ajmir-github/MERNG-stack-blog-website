@@ -2,6 +2,7 @@ import { useQuery, gql } from "@apollo/client";
 import PostsContainer from "../components/PostsContainer";
 import RightSideContainer from "../components/RightSideContainer";
 import LeftSideContainer from "../components/LeftSideContainer";
+import HomeLayout from "../components/Layout/HomeLayout";
 
 const getPostsQueryWithStats = gql`
   {
@@ -49,32 +50,20 @@ export default function Home() {
     );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
-      {/* left and main */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 md:col-span-8 lg:col-span-9 gap-y-2 lg:gap-x-2">
-        {/* Left */}
-        <div className="col-span-4">
-          <div className="lg:sticky lg:top-[10px]">
-            {data.stats && (
-              <LeftSideContainer
-                categories={data.stats.categories}
-                keywords={data.stats.keywords}
-              />
-            )}
-          </div>
-        </div>
-        {/* main */}
-        <div className="col-span-8">
-          {data.posts && <PostsContainer posts={data.posts} />}
-        </div>
-      </div>
-
-      {/* Right */}
-      <div className="md:col-span-4 lg:col-span-3  ">
-        <div className="md:sticky md:top-[10px]">
-          {data.stats && <RightSideContainer count={data.stats.count} />}
-        </div>
-      </div>
-    </div>
+    <HomeLayout
+      leftElement={
+        data.stats && (
+          <LeftSideContainer
+            categories={data.stats.categories}
+            keywords={data.stats.keywords}
+          />
+        )
+      }
+      rightElement={
+        data.stats && <RightSideContainer count={data.stats.count} />
+      }
+    >
+      {data.posts && <PostsContainer posts={data.posts} />}
+    </HomeLayout>
   );
 }
