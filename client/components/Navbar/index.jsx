@@ -49,7 +49,7 @@ export default function Navbar() {
   return (
     <>
       <LoginModel open={loginModal} hanldeClose={closeLoginModal} />
-      <div className="flex justify-between px-1">
+      <div className="flex justify-between p-2">
         <button className="btn btn-ghost gap-2" onClick={toggleTheme}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
