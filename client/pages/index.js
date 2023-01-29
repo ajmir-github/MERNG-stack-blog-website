@@ -3,67 +3,42 @@ import PostsContainer from "../components/PostsContainer";
 import RightSideContainer from "../components/RightSideContainer";
 import LeftSideContainer from "../components/LeftSideContainer";
 import HomeLayout from "../components/Layout/HomeLayout";
+import { client, getPostsWithStatsQuery } from "../ApolloClientProvider";
 
-const getPostsQueryWithStats = gql`
-  {
-    posts(page: { limit: 24 }) {
-      _id
-      title
-      category
-      description
-      thumbnail
-      author {
-        _id
-        name
-        profile
-      }
-      createdAt
-      views
-      keywords
-    }
-    stats(categoriesLimit: 12, keywordsLimit: 24) {
-      count {
-        users
-        posts
-        comments
-      }
-      categories {
-        category
-        count
-      }
-      keywords {
-        keyword
-        count
-      }
-    }
-  }
-`;
-
-export default function Home() {
-  const { loading, error, data } = useQuery(getPostsQueryWithStats);
-
-  if (loading)
-    return (
-      <div className="flex justify-center p-10">
-        <button className="btn btn-ghost btn-xl loading"></button>
-      </div>
-    );
-
+export default function Home({ posts, stats }) {
   return (
     <HomeLayout
       leftElement={
-        data.stats && (
+        stats && (
           <LeftSideContainer
-            categories={data.stats.categories}
-            keywords={data.stats.keywords}
+            categories={stats.categories}
+            keywords={stats.keywords}
           />
         )
       }
-      rightElement={
-        data.stats && <RightSideContainer count={data.stats.count} />
-      }
+      rightElement={stats && <RightSideContainer count={stats.count} />}
     >
-      {data.posts && <PostsContainer posts={data.posts} />}
+      {posts && <PostsContainer posts={posts} />}
     </HomeLayout>
   );
+}
+
+export async function getServerSideProps() {
+  const data = await client.query({
+    query: getPostsWithStatsQuery,
+  });
+
+  if (data.error)
+    return {
+      props: {
+        error: data.error,
+        errors: data.errors,
+      },
+    };
+
+  console.log(data.data);
+
+  return {
+    props: data.data,
+  };
 }

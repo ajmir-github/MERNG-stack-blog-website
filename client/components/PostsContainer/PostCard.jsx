@@ -43,7 +43,10 @@ export default function PostCard({
   );
   return (
     <div
-      className={classes("grid grid-cols-1 overflow-hidden gap-2", boxClasses)}
+      className={classes(
+        "grid grid-cols-1 overflow-hidden gap-2",
+        "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-box shadow-lg"
+      )}
     >
       {/* top: user, date, func to edit and delete */}
       <div className="flex w-full items-center justify-end p-4 md:p-6 lg:p-6">

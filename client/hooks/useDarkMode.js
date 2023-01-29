@@ -10,8 +10,10 @@ export default function useDarkMode(defaultMode = false) {
     if (!document?.documentElement) return;
     if (!mode) {
       document.documentElement.classList.add("dark");
+      localStorage.theme = "dark";
     } else {
       document.documentElement.classList.remove("dark");
+      localStorage.theme = "light";
     }
   }, [mode]);
   // return [mode, turnDarkMode, turnLightMode, toggleMode];

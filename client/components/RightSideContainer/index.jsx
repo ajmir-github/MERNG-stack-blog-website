@@ -1,12 +1,17 @@
 import Link from "next/link";
 import { ChatText, People, CardText } from "react-bootstrap-icons";
-import { boxClasses, classes } from "../../styles";
+import { classes } from "../../styles";
 
 export default function RightSideContainer({ count }) {
   return (
     <div className="flex flex-col gap-2">
       {/* Register */}
-      <div className={classes("alert", boxClasses)}>
+      <div
+        className={classes(
+          "alert",
+          "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-box shadow-lg"
+        )}
+      >
         <div>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -35,7 +40,12 @@ export default function RightSideContainer({ count }) {
         </div>
       </div>
       {/* two */}
-      <div className={classes("stats stats-vertical", boxClasses)}>
+      <div
+        className={classes(
+          "stats stats-vertical",
+          "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-box shadow-lg"
+        )}
+      >
         <div className="stat">
           <div className="stat-title">Users</div>
           <div className="stat-value">{count.users}</div>

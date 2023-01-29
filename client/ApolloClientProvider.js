@@ -1,4 +1,9 @@
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  gql,
+} from "@apollo/client";
 
 export const client = new ApolloClient({
   uri: "http://localhost:3001/graphql",
@@ -8,3 +13,38 @@ export const client = new ApolloClient({
 export function ApolloClientProvider({ children }) {
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 }
+
+export const getPostsWithStatsQuery = gql`
+  {
+    posts(page: { limit: 24 }) {
+      _id
+      title
+      category
+      description
+      thumbnail
+      author {
+        _id
+        name
+        profile
+      }
+      createdAt
+      views
+      keywords
+    }
+    stats(categoriesLimit: 12, keywordsLimit: 24) {
+      count {
+        users
+        posts
+        comments
+      }
+      categories {
+        category
+        count
+      }
+      keywords {
+        keyword
+        count
+      }
+    }
+  }
+`;
