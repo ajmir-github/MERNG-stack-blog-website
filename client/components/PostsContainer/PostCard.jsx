@@ -8,7 +8,7 @@ import {
   ChatText,
   ArrowRight,
 } from "react-bootstrap-icons";
-import { boxClasses, classes } from "../../styles";
+import { classes } from "../../styles";
 
 export default function PostCard({
   _id,
@@ -31,6 +31,7 @@ export default function PostCard({
               src={author.profile || "/assets/user.png"}
               width={48}
               height={48}
+              alt={author.name}
             />
           </div>
         </div>
@@ -101,6 +102,7 @@ export default function PostCard({
           {keywords &&
             keywords.map((keyword) => (
               <Link
+                key={keyword}
                 className="btn btn-xs btn-ghost gap-2"
                 href={`/keyword/${keyword}`}
               >

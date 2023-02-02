@@ -36,8 +36,6 @@ export async function getServerSideProps() {
       },
     };
 
-  console.log(data.data);
-
   return {
     props: data.data,
   };
