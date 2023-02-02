@@ -3,6 +3,7 @@ const {
   GraphQLNonNull,
   GraphQLID,
   GraphQLString,
+  GraphQLInt,
 } = require("graphql");
 const { User } = require("../models");
 const { PageInputType, SortUserInputType } = require("./InputTypes");
@@ -11,7 +12,8 @@ const { PageInputType, SortUserInputType } = require("./InputTypes");
 const users = {
   type: GraphQLList(require("../types/UserType")),
   args: {
-    page: { type: PageInputType, defaultValue: { limit: 8, skip: 0 } },
+    limit: { type: GraphQLInt, defaultValue: 8 },
+    offset: { type: GraphQLInt, defaultValue: 0 },
     sort: {
       type: SortUserInputType,
       defaultValue: { order: -1, by: "createdAt" },
@@ -19,7 +21,7 @@ const users = {
     search: { type: GraphQLString },
     country: { type: GraphQLString },
   },
-  resolve(parent, { page, sort, search, country }) {
+  resolve(parent, { limit, offset, sort, search, country }) {
     const findQuery = {};
     // search name
     if (search)
@@ -32,8 +34,8 @@ const users = {
     // Apply
     return User.find(findQuery)
       .sort({ [sort.by]: sort.order })
-      .limit(page.limit)
-      .skip(page.skip);
+      .limit(limit)
+      .skip(offset);
   },
 };
 

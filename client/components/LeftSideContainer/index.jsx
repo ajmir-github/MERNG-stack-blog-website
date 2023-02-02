@@ -1,8 +1,21 @@
 import Link from "next/link";
+import { useRef } from "react";
+import { useState } from "react";
 import { Tags, Bookmark, Tag, Bookmarks } from "react-bootstrap-icons";
 import { boxClasses, classes } from "../../styles";
 
-export default function LeftSideContainer({ categories, keywords }) {
+export default function LeftSideContainer({
+  categories,
+  keywords,
+  searchPosts,
+}) {
+  const inputRef = useRef(null);
+  const search = () => {
+    const input = inputRef.current.value;
+    if (input && input.length > 3) {
+      searchPosts(input);
+    }
+  };
   return (
     <div className="grid gap-y-2">
       {/* Search */}
@@ -16,6 +29,8 @@ export default function LeftSideContainer({ categories, keywords }) {
           type="text"
           placeholder="Search here..."
           className="input bg-transparent input-bordered w-full"
+          ref={inputRef}
+          onChange={search}
         />
       </div>
 

@@ -15,8 +15,8 @@ export function ApolloClientProvider({ children }) {
 }
 
 export const getPosts = gql`
-  query GetPosts {
-    posts(page: { limit: 24 }) {
+  query GetPosts($limit: Int!, $offset: Int!, $search: String) {
+    posts(limit: $limit, offset: $offset, search: $search) {
       _id
       title
       category
@@ -30,6 +30,23 @@ export const getPosts = gql`
       createdAt
       views
       keywords
+    }
+  }
+`;
+
+export const getSinglePost = gql`
+  query Post($id: ID!) {
+    post(postId: $id) {
+      _id
+      title
+      category
+      description
+      thumbnail
+      body
+      published
+      createdAt
+      updatedAt
+      views
     }
   }
 `;
@@ -56,7 +73,7 @@ export const getStats = gql`
 
 export const getPostsWithStatsQuery = gql`
   {
-    posts(page: { limit: 24 }) {
+    posts {
       _id
       title
       category
@@ -71,7 +88,7 @@ export const getPostsWithStatsQuery = gql`
       views
       keywords
     }
-    stats(categoriesLimit: 12, keywordsLimit: 24) {
+    stats {
       count {
         users
         posts

@@ -4,6 +4,7 @@ const {
   GraphQLNonNull,
   GraphQLString,
   GraphQLBoolean,
+  GraphQLInt,
 } = require("graphql");
 const { Post } = require("../models");
 // const { PostType } = require("../types");
@@ -17,7 +18,8 @@ const {
 const posts = {
   type: GraphQLList(require("../types/PostType")),
   args: {
-    page: { type: PageInputType, defaultValue: { limit: 8, skip: 0 } },
+    limit: { type: GraphQLInt, defaultValue: 8 },
+    offset: { type: GraphQLInt, defaultValue: 0 },
     publish: { type: PublishedInputType, defaultValue: true },
     sort: { type: SortInputType, defaultValue: { order: -1, by: "createdAt" } },
     search: { type: GraphQLString },
@@ -27,7 +29,7 @@ const posts = {
   },
   resolve(
     parent,
-    { sort, publish, page, search, category, keywords, AnyKeyword }
+    { sort, publish, limit, offset, search, category, keywords, AnyKeyword }
   ) {
     let findQuery = {};
     // publish
@@ -63,8 +65,8 @@ const posts = {
     // Apply
     return Post.find(findQuery)
       .sort({ [sort.by]: sort.order })
-      .limit(page.limit)
-      .skip(page.skip)
+      .limit(limit)
+      .skip(offset)
       .populate("userId");
   },
 };
