@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
-const { Post, User, RolesEnums, Comment, Stats } = require("../src/models");
+const { Post, User, RolesEnums } = require("../models");
 require("dotenv").config();
 
 async function logUsers() {
@@ -12,10 +12,6 @@ async function logPosts() {
   const posts = await Post.find();
   console.log(posts);
 }
-async function logComments() {
-  const comments = await Comment.find();
-  console.log(comments);
-}
 
 async function addUser(data) {
   const user = new User(data);
@@ -24,11 +20,6 @@ async function addUser(data) {
 async function addPost(data) {
   const post = new Post(data);
   await post.save();
-}
-
-async function addComment(data) {
-  const comment = new Comment(data);
-  await comment.save();
 }
 
 async function cleanUsers() {
@@ -45,14 +36,6 @@ async function cleanPosts() {
     await Post.findByIdAndDelete(post._id);
   }
   console.log("POSTS CLEANED!");
-}
-
-async function cleanComments() {
-  const comments = await Comment.find();
-  for (const comment of comments) {
-    await Comment.findByIdAndDelete(comment._id);
-  }
-  console.log("COMMENTS CLEANED!");
 }
 
 async function runRange(func, times) {
@@ -73,20 +56,6 @@ function randomItem(list) {
   return list[index];
 }
 
-async function getIdsOfUsers() {
-  const list = [];
-  const users = await User.find(undefined);
-  users.forEach((user) => list.push(user._id.toString()));
-  return list;
-}
-
-async function getIdsOfPosts() {
-  const list = [];
-  const posts = await Post.find(undefined);
-  posts.forEach((post) => list.push(post._id.toString()));
-  return list;
-}
-
 async function addUsers(count) {
   await runRange(async () => {
     await addUser({
@@ -94,7 +63,6 @@ async function addUsers(count) {
       password: faker.internet.password(),
       role: randomItem(RolesEnums),
       name: faker.name.fullName(),
-      title: faker.name.jobType(),
       country: faker.address.country(),
       profile: faker.image.avatar(),
       bio: faker.lorem.lines(2 + randomRangeNumber(14)),
@@ -110,6 +78,13 @@ async function addUsers(count) {
   console.log("USERS created", { count });
 }
 
+async function getIdsOfUsers() {
+  const list = [];
+  const users = await User.find(undefined);
+  users.forEach((user) => list.push(user._id.toString()));
+  return list;
+}
+
 async function addPosts(count) {
   const users = await getIdsOfUsers();
   await runRange(async () => {
@@ -123,50 +98,38 @@ async function addPosts(count) {
       description: faker.lorem.lines(2),
       thumbnail: faker.image.abstract(640, 480, true),
       body: faker.lorem.paragraph(14),
-      // comments
+      comments: await runRange(
+        () => ({
+          author: faker.datatype.boolean()
+            ? {
+                name: faker.name.fullName(),
+                email: faker.internet.email(),
+              }
+            : {
+                userId: randomItem(users),
+              },
+          body: faker.lorem.lines(4),
+        }),
+        randomRangeNumber(4)
+      ),
       published: faker.datatype.boolean(),
-      author: randomItem(users),
+      userId: randomItem(users),
       views: randomRangeNumber(100000),
     });
   }, count);
   console.log("POSTS created", { count });
 }
 
-async function addComments(count) {
-  const postIds = await getIdsOfPosts();
-  const userIds = await getIdsOfUsers();
-  await runRange(async () => {
-    await addComment({
-      postId: randomItem(postIds),
-      body: faker.lorem.lines(4),
-      ...(faker.datatype.boolean()
-        ? {
-            author: randomItem(userIds),
-          }
-        : {
-            externalAuthor: {
-              name: faker.name.fullName(),
-              email: faker.internet.email(),
-            },
-          }),
-    });
-  }, count);
-  console.log("Comments created", { count });
-}
-
 mongoose.set("strictQuery", true);
 mongoose.connect(process.env.DATABASE_URL, async (err) => {
   if (err) throw err;
 
-  // await addUsers(10);
-  // await addPosts(50);
-  // await addComments(200);
+  await addUsers(50);
+  await addPosts(1000);
 
-  // await logUsers();
-  // await logPosts();
-  // await logComments();
+  // logPosts();
+  // logUsers();
 
-  // await cleanUsers();
-  // await cleanPosts();
-  // await cleanComments();
+  // cleanPosts();
+  // cleanUsers();
 });

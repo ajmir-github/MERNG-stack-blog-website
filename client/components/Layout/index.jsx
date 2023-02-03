@@ -5,7 +5,7 @@ export default function Layout(props) {
   return (
     <div className="bg-gray-300 dark:bg-gray-700">
       <div className="grid gap-2 p-2">
-        <nav className="flex justify-center items-start">
+        <nav className="flex justify-center items-start" id="top">
           <div
             className={classes(
               "max-w-screen-xl w-full",

@@ -1,0 +1,8 @@
+GET http://localhost:3001/users
+    # ?search=zbon
+    # ?filter=role::User
+###
+GET http://localhost:3001/users/63dd48eae0773a0f70175792
+    # ?search=zbon
+    # ?filter=role::User
+###

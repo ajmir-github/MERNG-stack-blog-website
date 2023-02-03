@@ -5,12 +5,13 @@ import LeftSideContainer from "../components/LeftSideContainer";
 import HomeLayout from "../components/Layout/HomeLayout";
 import { client, getPosts, getStats } from "../ApolloClientProvider";
 import { useState } from "react";
-import { ArrowDown } from "react-bootstrap-icons";
+import { ArrowDown, ArrowUp } from "react-bootstrap-icons";
 import { classes } from "../styles";
 
 export default function Home({ posts: initalPosts, stats }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState(null);
   const { refetch } = useQuery(getPosts, {
     ssr: false,
     skip: true,
@@ -21,9 +22,15 @@ export default function Home({ posts: initalPosts, stats }) {
   });
   const loadmore = () => {
     setLoading(true);
+    console.log({
+      limit: 16,
+      offset: posts.length,
+      ...(search && { search }),
+    });
     refetch({
       limit: 16,
       offset: posts.length,
+      ...(search && { search }),
     }).then((value) => {
       setLoading(false);
       setPosts([...posts, ...value.data.posts]);
@@ -32,15 +39,8 @@ export default function Home({ posts: initalPosts, stats }) {
 
   const searchPosts = (value) => {
     setPosts([]);
-    setLoading(true);
-    refetch({
-      limit: 16,
-      offset: posts.length,
-      search: value,
-    }).then((value) => {
-      setLoading(false);
-      setPosts([...posts, ...value.data.posts]);
-    });
+    setSearch(value);
+    loadmore();
   };
 
   return (
@@ -58,13 +58,18 @@ export default function Home({ posts: initalPosts, stats }) {
     >
       <div className="grid gap-y-2">
         {posts && <PostsContainer posts={posts} />}
-        <button
-          className={classes("btn btn-primary gap-2", loading && "loading")}
-          onClick={loadmore}
-          disabled={loading}
-        >
-          <ArrowDown size={18} /> Load More
-        </button>
+        <div className="btn-group gap-[2px]">
+          <button
+            className={classes("btn btn-primary grow", loading && "loading")}
+            onClick={loadmore}
+            disabled={loading}
+          >
+            <ArrowDown size={18} /> Load More
+          </button>
+          <a className={"btn btn-secondary grow"} href="#top">
+            <ArrowUp size={18} /> Scroll Top
+          </a>
+        </div>
       </div>
     </HomeLayout>
   );

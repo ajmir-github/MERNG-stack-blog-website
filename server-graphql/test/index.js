@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { faker } = require("@faker-js/faker");
-const { Post, User, RolesEnums, Comment, Stats } = require("../src/models");
+const { Post, User, RolesEnums, Comment } = require("../models");
 require("dotenv").config();
 
 async function logUsers() {
@@ -94,7 +94,6 @@ async function addUsers(count) {
       password: faker.internet.password(),
       role: randomItem(RolesEnums),
       name: faker.name.fullName(),
-      title: faker.name.jobType(),
       country: faker.address.country(),
       profile: faker.image.avatar(),
       bio: faker.lorem.lines(2 + randomRangeNumber(14)),
@@ -125,7 +124,7 @@ async function addPosts(count) {
       body: faker.lorem.paragraph(14),
       // comments
       published: faker.datatype.boolean(),
-      author: randomItem(users),
+      userId: randomItem(users),
       views: randomRangeNumber(100000),
     });
   }, count);
@@ -141,7 +140,7 @@ async function addComments(count) {
       body: faker.lorem.lines(4),
       ...(faker.datatype.boolean()
         ? {
-            author: randomItem(userIds),
+            internalAuthor: randomItem(userIds),
           }
         : {
             externalAuthor: {
@@ -158,9 +157,9 @@ mongoose.set("strictQuery", true);
 mongoose.connect(process.env.DATABASE_URL, async (err) => {
   if (err) throw err;
 
-  // await addUsers(10);
-  // await addPosts(50);
-  // await addComments(200);
+  // await addUsers(20);
+  // await addPosts(400);
+  // await addComments(800);
 
   // await logUsers();
   // await logPosts();
@@ -169,4 +168,5 @@ mongoose.connect(process.env.DATABASE_URL, async (err) => {
   // await cleanUsers();
   // await cleanPosts();
   // await cleanComments();
+  // getStats();
 });

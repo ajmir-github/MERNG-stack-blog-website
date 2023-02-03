@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { useRef } from "react";
+import { useEffect } from "react";
 import { useState } from "react";
 import { Tags, Bookmark, Tag, Bookmarks } from "react-bootstrap-icons";
+import useInputDebounce from "../../hooks/useInputDebounce";
 import { boxClasses, classes } from "../../styles";
 
 export default function LeftSideContainer({
@@ -9,13 +11,7 @@ export default function LeftSideContainer({
   keywords,
   searchPosts,
 }) {
-  const inputRef = useRef(null);
-  const search = () => {
-    const input = inputRef.current.value;
-    if (input && input.length > 3) {
-      searchPosts(input);
-    }
-  };
+  const onChangeFunc = useInputDebounce(searchPosts);
   return (
     <div className="grid gap-y-2">
       {/* Search */}
@@ -29,8 +25,7 @@ export default function LeftSideContainer({
           type="text"
           placeholder="Search here..."
           className="input bg-transparent input-bordered w-full"
-          ref={inputRef}
-          onChange={search}
+          onChange={onChangeFunc}
         />
       </div>
 
