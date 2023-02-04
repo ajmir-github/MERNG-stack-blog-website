@@ -6,6 +6,7 @@ const cors = require("cors");
 // Routers
 const userRouter = require("./routers/userRouter");
 const postRouter = require("./routers/PostRouter");
+const utilRouter = require("./routers/utilRouter");
 
 // Main function
 function createApp() {
@@ -26,6 +27,7 @@ function createApp() {
   // Routers
   app.use("/users", userRouter);
   app.use("/posts", postRouter);
+  app.use("/util", utilRouter);
 
   // NOT_FOUND URL
   app.use("*", (req, res) =>

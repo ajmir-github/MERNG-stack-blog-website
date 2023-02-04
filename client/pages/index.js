@@ -1,46 +1,62 @@
-import { useQuery, gql } from "@apollo/client";
 import PostsContainer from "../components/PostsContainer";
 import RightSideContainer from "../components/RightSideContainer";
 import LeftSideContainer from "../components/LeftSideContainer";
 import HomeLayout from "../components/Layout/HomeLayout";
-import { client, getPosts, getStats } from "../ApolloClientProvider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowDown, ArrowUp } from "react-bootstrap-icons";
 import { classes } from "../styles";
+import axios from "axios";
+import { APIs } from "../services";
+import { useRouter } from "next/router";
+import { parseQuery } from "../utils/queryParser";
 
 export default function Home({ posts: initalPosts, stats }) {
-  const [posts, setPosts] = useState([]);
+  const router = useRouter();
+
+  const [posts, setPosts] = useState([...initalPosts]);
   const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState(null);
-  const { refetch } = useQuery(getPosts, {
-    ssr: false,
-    skip: true,
-    variables: {
-      limit: 8,
-      offset: 0,
-    },
-  });
-  const loadmore = () => {
+  const [params, setParams] = useState(router.query);
+  const [fetchable, setFetchable] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  const fetchPosts = () => {
     setLoading(true);
-    console.log({
-      limit: 16,
-      offset: posts.length,
-      ...(search && { search }),
-    });
-    refetch({
-      limit: 16,
-      offset: posts.length,
-      ...(search && { search }),
-    }).then((value) => {
+    console.log(params);
+    axios.get(APIs.getPosts, { params }).then((res) => {
+      console.log(res.request);
+      const { data } = res;
+      setPosts([...posts, ...data]);
+      if (data.length === 0) setHasMore(false);
       setLoading(false);
-      setPosts([...posts, ...value.data.posts]);
+    });
+  };
+
+  useEffect(() => {
+    if (fetchable) {
+      fetchPosts();
+      router.push(parseQuery(params), undefined, { shallow: true });
+    }
+  }, [params]);
+
+  const loadmore = () => {
+    if (!fetchable) setFetchable(true);
+    setParams({
+      ...params,
+      offset: posts.length,
     });
   };
 
   const searchPosts = (value) => {
+    if (!fetchable) setFetchable(true);
+    // reset
     setPosts([]);
-    setSearch(value);
-    loadmore();
+    setHasMore(true);
+    // new param
+    setParams({
+      ...params,
+      offset: 0,
+      search: value,
+    });
   };
 
   return (
@@ -62,9 +78,10 @@ export default function Home({ posts: initalPosts, stats }) {
           <button
             className={classes("btn btn-primary grow", loading && "loading")}
             onClick={loadmore}
-            disabled={loading}
+            disabled={loading || !hasMore}
           >
-            <ArrowDown size={18} /> Load More
+            <ArrowDown size={18} />
+            {hasMore ? "Load More" : "No more Posts!"}
           </button>
           <a className={"btn btn-secondary grow"} href="#top">
             <ArrowUp size={18} /> Scroll Top
@@ -75,20 +92,14 @@ export default function Home({ posts: initalPosts, stats }) {
   );
 }
 
-export async function getServerSideProps() {
-  const data = await client.query({
-    query: getStats,
-  });
-
-  if (data.error)
-    return {
-      props: {
-        error: data.error,
-        errors: data.errors,
-      },
-    };
-
+export async function getServerSideProps(req) {
+  const params = req.query;
+  const postsRes = await axios.get(APIs.getPosts, { params });
+  const statsRes = await axios.get(APIs.getStats);
   return {
-    props: data.data,
+    props: {
+      posts: postsRes.data,
+      stats: statsRes.data,
+    },
   };
 }

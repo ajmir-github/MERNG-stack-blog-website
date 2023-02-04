@@ -3,7 +3,7 @@ import Navbar from "../Navbar";
 
 export default function Layout(props) {
   return (
-    <div className="bg-gray-300 dark:bg-gray-700">
+    <div className="bg-gray-300 dark:bg-gray-700 min-h-screen">
       <div className="grid gap-2 p-2">
         <nav className="flex justify-center items-start" id="top">
           <div

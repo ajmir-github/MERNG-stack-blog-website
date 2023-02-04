@@ -11,12 +11,12 @@ import {
 import { classes } from "../../styles";
 
 export default function PostCard({
-  _id,
+  id,
   title,
   category,
   description,
   thumbnail,
-  author, //_id,name profile
+  author, //id,name profile
   views,
   keywords,
   createdAt,
@@ -51,10 +51,10 @@ export default function PostCard({
     >
       {/* top: user, date, func to edit and delete */}
       <div className="flex w-full items-center justify-end p-4 md:p-6 lg:p-6">
-        {author && author._id ? (
+        {author && author.id ? (
           <Link
             className="flex gap-4 grow items-center"
-            href={`/user/${author._id}`}
+            href={`/user/${author.id}`}
           >
             {authorElement}
           </Link>
@@ -114,12 +114,12 @@ export default function PostCard({
         {/* bottom */}
         <div className="flex gap-2">
           <div className="btn-group grow">
-            <Link className="btn btn-ghost gap-4 w-1/2" href={`/post/${_id}`}>
+            <Link className="btn btn-ghost gap-4 w-1/2" href={`/post/${id}`}>
               <ArrowRight size={18} /> View
             </Link>
             <Link
               className="btn btn-ghost gap-4 w-1/2"
-              href={`/post/${_id}#make-comment`}
+              href={`/post/${id}#make-comment`}
             >
               <ChatText size={18} />
               Comment

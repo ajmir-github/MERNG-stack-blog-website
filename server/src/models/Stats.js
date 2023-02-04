@@ -45,7 +45,7 @@ class Statistics {
     if (process.env.NODE_ENV === "development")
       console.log("Statistics updated!");
   }
-  get(categoriesLimit = 16, keywordsLimit = 16) {
+  get(categoriesLimit = 16, keywordsLimit = 24) {
     return {
       count: this.count,
       categories: this.categories.slice(0, categoriesLimit),

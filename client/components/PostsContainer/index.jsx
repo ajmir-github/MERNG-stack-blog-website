@@ -5,7 +5,7 @@ export default function PostsContainer({ posts }) {
   return (
     <>
       {posts.map((post) => (
-        <PostCard key={post._id} {...post} />
+        <PostCard key={post.id} {...post} />
       ))}
     </>
   );
