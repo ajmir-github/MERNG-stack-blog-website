@@ -6,15 +6,13 @@ const {
   filterQueryParser,
   sortQueryParser,
 } = require("../libs/fQuery");
+const postQueries = require("../middlewares/postQueries");
 const router = express.Router();
 
 // GET SOME POSTS
 router.get(
   "/",
-  searchQueryParser(["title", "description"]),
-  filterQueryParser(),
-  pageQueryParser(),
-  sortQueryParser({ createdAt: -1 }),
+  postQueries(["title", "description"], 8, { createdAt: -1 }),
   getPosts
 );
 

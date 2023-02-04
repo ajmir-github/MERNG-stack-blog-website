@@ -1,56 +1,29 @@
-import { gql, useQuery } from "@apollo/client";
+import axios from "axios";
 import Image from "next/image";
 import { useEffect } from "react";
-import { client } from "../../ApolloClientProvider";
+import PostsContainer from "../../components/PostsContainer";
+import { APIs } from "../../services";
 
-const postQuery = gql`
-  query Post($id: ID!) {
-    post(postId: $id) {
-      _id
-      title
-      category
-      description
-      thumbnail
-      body
-      published
-      createdAt
-      updatedAt
-      views
-    }
-  }
-`;
-
-export default function Post({ post, error, errors }) {
+export default function Post({ post, comments, relatedPosts }) {
   return (
     <>
-      <Image src={post.thumbnail} alt={post.title} width={600} height={400} />
-      <h1>{post.title}</h1>
-      <i>{post.category}</i>
-      <p>{post.description}</p>
-      <p>{post.body}</p>
+      <div>
+        <Image src={post.thumbnail} alt={post.title} width={600} height={400} />
+        <h1>{post.title}</h1>
+        <i>{post.category}</i>
+        <p>{post.description}</p>
+        <p>{post.body}</p>
+      </div>
+
+      <PostsContainer posts={relatedPosts} />
     </>
   );
 }
 
 export async function getServerSideProps(context) {
-  try {
-    const data = await client.query({
-      query: postQuery,
-      variables: {
-        id: context.params.postId,
-      },
-    });
-
-    return {
-      props: {
-        ...data.data,
-      },
-    };
-  } catch (error) {
-    return {
-      props: {
-        error: "Server failed!",
-      },
-    };
-  }
+  const { postId } = context.params;
+  const { data } = await axios.get(APIs.getSinglePosts + postId);
+  return {
+    props: data,
+  };
 }

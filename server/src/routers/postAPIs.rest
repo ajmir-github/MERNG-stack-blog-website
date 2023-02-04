@@ -1,18 +1,6 @@
 GET http://localhost:3001/posts
-    # ?limit=1
-    # ?search=Web
-    # &sort=views::desc
-    # ?filter=category::Analyst:and:views:gt:60000
-    ?filter=keywords:has:Investor, Legacy
-    # ?filter=category::Analyst:and:keywords:has:Corporate
-
-###
-GET http://localhost:3001/posts/63dd491063438d7576289458
-    ?limit=1
-    # ?search=Web
-    # &sort=views::desc
-    # ?filter=category::Analyst:and:views:gt:60000
-    # ?filter=keywords:has:Investor, Legacy
-    # ?filter=category::Analyst:and:keywords:has:Corporate
-
-###
+    # ?limit=10
+    # &offset=1
+    # ?search=prod
+    # ?category=Technician
+    # ?keywords=Dynamic,Product
