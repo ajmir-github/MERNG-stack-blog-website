@@ -6,7 +6,7 @@ const authorPopulation = [
     select: "_id name profile",
   },
 ];
-const postsProjection = "-body -updatedAt";
+const postsProjection = "-keywords -body -updatedAt";
 const postProjection = "-updatedAt";
 
 exports.getPosts = async (req, res) => {

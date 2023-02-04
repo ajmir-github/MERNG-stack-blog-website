@@ -9,6 +9,7 @@ import {
   ArrowRight,
 } from "react-bootstrap-icons";
 import { classes } from "../../styles";
+import { simplifyDate, simplifyNum } from "../../utils/simplify";
 
 export default function PostCard({
   id,
@@ -18,7 +19,6 @@ export default function PostCard({
   thumbnail,
   author, //id,name profile
   views,
-  keywords,
   createdAt,
 }) {
   const editable = 1;
@@ -38,7 +38,7 @@ export default function PostCard({
       )}
       <div className="grow">
         <h4 className=" text-lg font-bold">{author.name}</h4>
-        <p className="text-gray-400 text-md">{createdAt.date}</p>
+        <p className="text-gray-400 text-md">{simplifyDate(createdAt)}</p>
       </div>
     </>
   );
@@ -87,28 +87,8 @@ export default function PostCard({
         {/* Descriptions */}
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold">{title}</h1>
+          <h1 className="text-lg font-mono text-primary">{category}</h1>
           <p className="text-md text-gray-400">{description}</p>
-        </div>
-
-        <div className="flex justify-start items-center gap-2 flex-wrap">
-          {category && (
-            <Link
-              className="btn btn-xs btn-primary flex gap-2"
-              href={`/category/${category}`}
-            >
-              <Bookmark /> {category}
-            </Link>
-          )}
-          {keywords &&
-            keywords.map((keyword) => (
-              <Link
-                key={keyword}
-                className="btn btn-xs btn-ghost gap-2"
-                href={`/keyword/${keyword}`}
-              >
-                <Tags size={14} /> {keyword}
-              </Link>
-            ))}
         </div>
 
         {/* bottom */}
@@ -128,7 +108,7 @@ export default function PostCard({
           {views && (
             <div className="flex items-center gap-2 text-gray-400">
               <Eye />
-              {views}
+              {simplifyNum(views)}
             </div>
           )}
         </div>
