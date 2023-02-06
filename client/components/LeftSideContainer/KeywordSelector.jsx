@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { Tags, Tag, XCircle } from "react-bootstrap-icons";
 import { classes } from "../../styles";
 
-export default function KeywordSelector({
-  keywords,
-  selectedKeywords,
-  setSelectedKeywords,
-}) {
+export default function KeywordSelector({ keywords, fetchPosts }) {
+  const [selectedKeywords, setSelectedKeywords] = useState([]);
+
+  useEffect(() => {
+    if (keywords.length > 0)
+      fetchPosts({ keywords: selectedKeywords.join(",") });
+  }, [selectedKeywords]);
   const hasSelection = selectedKeywords.length > 0;
   const isKeywordSelected = (keyword) => selectedKeywords.includes(keyword);
   const selectKeyword = (keyword) =>

@@ -30,7 +30,6 @@ module.exports = (searchFields, defaultLimit, sort) => (req, res, next) => {
       });
     });
 
-  console.log(queries);
   // APPEND
   req.databaseQuery = {
     ...req.databaseQuery,

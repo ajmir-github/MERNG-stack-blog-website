@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { classes } from "../../styles";
 
-export default function SearchBox({ setSearch }) {
+export default function SearchBox({ fetchPosts }) {
   const [value, setValue] = useState(null);
   const inputChanged = (e) => setValue(e.target.value);
   // Debounce the request
   useEffect(() => {
-    const unsub = setTimeout(() => setSearch(value), 1000);
+    const unsub = setTimeout(() => fetchPosts({ search: value }), 1000);
     return () => clearTimeout(unsub);
   }, [value]);
 

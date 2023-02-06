@@ -8,106 +8,60 @@ import { classes } from "../styles";
 import axios from "axios";
 import { APIs } from "../services";
 import { useRouter } from "next/router";
+import isServerSide from "../utils/isServerSide";
 import { parseQuery } from "../utils/queryParser";
-import Link from "next/link";
 
 export default function Home({ posts: initalPosts, stats }) {
   const router = useRouter();
-
+  const isServer = isServerSide();
   const [posts, setPosts] = useState([...initalPosts]);
   const [loading, setLoading] = useState(false);
-  const [params, setParams] = useState({});
-  const [fetchable, setFetchable] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  // Fetch the post using the params
-  const fetchPosts = () => {
+
+  const fetchPosts = (param, append = false) => {
+    // Not on server
+    if (isServer) return;
     setLoading(true);
-    console.log(params);
+    // GET the params
+    const params = { ...router.query, ...param };
+    if (!append) params.offset = 0;
+    const query = parseQuery(params);
+    // Change the url
+    router.push(query, undefined, { shallow: true });
+    // make the request
     axios.get(APIs.getPosts, { params }).then((res) => {
-      console.log(res.request);
-      const { data } = res;
-      setPosts([...posts, ...data]);
-      if (data.length === 0) setHasMore(false);
+      // Reflect on success
+      setPosts(append ? [...posts, ...res.data] : res.data);
+      if (res.data.length === 0) setHasMore(false);
       setLoading(false);
-    });
-  };
-
-  // Make a request when params is updated
-  useEffect(() => {
-    if (fetchable) {
-      fetchPosts();
-      router.push(parseQuery(params), undefined, { shallow: true });
-    }
-  }, [params]);
-  // Only for the first time
-  useEffect(() => {
-    setParams(router.query);
-  }, []);
-
-  // Using the existing params load more posts
-  const loadmore = () => {
-    if (!fetchable) setFetchable(true);
-    setParams({
-      ...params,
-      offset: posts.length,
-    });
-  };
-
-  // inject the filer param
-  const filter = (value) => {
-    console.log("filter");
-    if (!fetchable) setFetchable(true);
-    // reset
-    setPosts([]);
-    setHasMore(true);
-    // new param
-    setParams({
-      ...params,
-      offset: 0,
-      filter: value,
     });
   };
 
   return (
     <HomeLayout
       leftElement={
-        stats && (
-          <LeftSideContainer
-            categories={stats.categories}
-            keywords={stats.keywords}
-            filter={filter}
-          />
-        )
+        <LeftSideContainer
+          categories={stats.categories}
+          keywords={stats.keywords}
+          fetchPosts={fetchPosts}
+        />
       }
-      rightElement={stats && <RightSideContainer count={stats.count} />}
+      rightElement={<RightSideContainer count={stats.count} />}
     >
       <div className="grid gap-y-2">
-        {posts && <PostsContainer posts={posts} />}
-        {loading ? (
-          <div className="btn btn-ghost btn-xl loading"></div>
-        ) : (
-          <div className="btn-group gap-[2px]">
-            <button
-              className={"btn btn-primary grow"}
-              onClick={loadmore}
-              disabled={!hasMore}
-            >
-              <ArrowDown size={18} />
-              {hasMore ? "Load More" : "No more Posts!"}
-            </button>
-            <a className={"btn btn-secondary grow"} href="#top">
-              <ArrowUp size={18} /> Scroll Top
-            </a>
-          </div>
-        )}
+        <PostsContainer
+          posts={posts}
+          loading={loading}
+          hasMore={hasMore}
+          fetchPosts={fetchPosts}
+        />
       </div>
     </HomeLayout>
   );
 }
 
 export async function getServerSideProps(req) {
-  const params = req.query;
-  const postsRes = await axios.get(APIs.getPosts, { params });
+  const postsRes = await axios.get(APIs.getPosts, { params: req.query });
   const statsRes = await axios.get(APIs.getStats);
   return {
     props: {

@@ -2,20 +2,16 @@ import { useEffect, useState } from "react";
 import { Bookmark, Bookmarks, XCircle } from "react-bootstrap-icons";
 import { classes } from "../../styles";
 
-export default function CategorySelector({
-  categories,
-  selectedCategory,
-  setSelectedCategory,
-}) {
-  const hasSelection = selectedCategory.length > 0;
-  const isSelected = (keyword) => selectedCategory.includes(keyword);
-  const selectKeyword = (keyword) =>
-    setSelectedCategory(
-      isSelected(keyword)
-        ? selectedCategory.filter((w) => w !== keyword)
-        : [...selectedCategory, keyword]
-    );
-  const clearAll = () => setSelectedCategory([]);
+export default function CategorySelector({ categories, fetchPosts }) {
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  useEffect(() => {
+    if (hasSelection) fetchPosts({ category: selectedCategory });
+  }, [selectedCategory]);
+  const hasSelection = selectedCategory !== "";
+  const isSelected = (keyword) => keyword === selectedCategory;
+  const selectKeyword = (keyword) => setSelectedCategory(keyword);
+  const clearAll = () => setSelectedCategory("");
   return (
     <div
       className={classes(
